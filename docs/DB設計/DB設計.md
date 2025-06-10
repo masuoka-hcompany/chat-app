@@ -102,6 +102,8 @@ erDiagram
     VARCHAR name
     TEXT description
     INTEGER sort_no
+    TIMESTAMP created_at
+    TIMESTAMP updated_at
   }
 
   rooms {
