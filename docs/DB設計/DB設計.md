@@ -42,15 +42,15 @@
 
 ### rooms （チャットルーム）
 
-| 論理名            | 項目名         | データ型     | PK  | NN  | 初期値 | 備考              |
-| ----------------- | -------------- | ------------ | --- | --- | ------ | ----------------- |
-| チャットルーム ID | id             | UUID         | ○   | ○   |        | UUID で自動採番   |
-| チャットルーム名  | name           | VARCHAR(100) |     | ○   |        |                   |
-| 説明              | description    | TEXT         |     |     |        |                   |
-| 作成ユーザー ID   | create_user_id | UUID         |     | ○   |        | 外部キー:users.id |
-| 更新ユーザー ID   | update_user_id | UUID         |     | ○   |        | 外部キー:users.id |
-| 登録日時          | created_at     | TIMESTAMP    |     | ○   | now()  |                   |
-| 更新日時          | updated_at     | TIMESTAMP    |     | ○   | now()  |                   |
+| 論理名            | 項目名         | データ型     | PK  | NN  | 初期値 | 備考                                                     |
+| ----------------- | -------------- | ------------ | --- | --- | ------ | -------------------------------------------------------- |
+| チャットルーム ID | id             | UUID         | ○   | ○   |        | UUID で自動採番                                          |
+| チャットルーム名  | name           | VARCHAR(100) |     | ○   |        |                                                          |
+| 説明              | description    | TEXT         |     |     |        | チャットルームに関する説明を管理・表示する用のフィールド |
+| 作成ユーザー ID   | create_user_id | UUID         |     | ○   |        | 外部キー:users.id                                        |
+| 更新ユーザー ID   | update_user_id | UUID         |     | ○   |        | 外部キー:users.id                                        |
+| 登録日時          | created_at     | TIMESTAMP    |     | ○   | now()  |                                                          |
+| 更新日時          | updated_at     | TIMESTAMP    |     | ○   | now()  |                                                          |
 
 ---
 
