@@ -5,6 +5,7 @@
 | テーブル名    | 論理名             | 用途概要                                   |
 | ------------- | ------------------ | ------------------------------------------ |
 | users         | ユーザー           | ユーザー情報を管理                         |
+| profiles      | プロフィール       | ユーザーのプロフィール情報を管理           |
 | user_statuses | ユーザーステータス | ユーザーステータスのマスタ                 |
 | rooms         | チャットルーム     | チャットルームの情報を管理                 |
 | messages      | メッセージ         | チャットルームに投稿されたメッセージを管理 |
@@ -15,15 +16,13 @@
 
 ### users （ユーザー）
 
-| 論理名                | 項目名            | データ型     | PK  | NN  | 初期値 | 備考                      |
-| --------------------- | ----------------- | ------------ | --- | --- | ------ | ------------------------- |
-| ユーザー ID           | id                | UUID         | ○   | ○   |        | UUID で自動採番           |
-| ユーザー名            | name              | VARCHAR(100) |     | ○   |        |                           |
-| メールアドレス        | email             | VARCHAR(255) |     | ○   |        |                           |
-| プロフィール画像      | profile_image_url | VARCHAR(255) |     |     |        |                           |
-| ユーザーステータス ID | user_status_id    | VARCHAR(50)  | ○   | ○   |        | 外部キー:user_statuses.id |
-| 登録日時              | created_at        | TIMESTAMP    |     | ○   | now()  |                           |
-| 更新日時              | updated_at        | TIMESTAMP    |     | ○   | now()  |                           |
+| 論理名                | 項目名         | データ型     | PK  | NN  | 初期値 | 備考                      |
+| --------------------- | -------------- | ------------ | --- | --- | ------ | ------------------------- |
+| ユーザー ID           | id             | UUID         | ○   | ○   |        | UUID で自動採番           |
+| メールアドレス        | email          | VARCHAR(255) |     | ○   |        |                           |
+| ユーザーステータス ID | user_status_id | VARCHAR(50)  | ○   | ○   |        | 外部キー:user_statuses.id |
+| 登録日時              | created_at     | TIMESTAMP    |     | ○   | now()  |                           |
+| 更新日時              | updated_at     | TIMESTAMP    |     | ○   | now()  |                           |
 
 ---
 
@@ -37,6 +36,18 @@
 | 並び順                | sort_no     | INTEGER      |     | ○   | 0      |                        |
 | 登録日時              | created_at  | TIMESTAMP    |     | ○   | now()  |                        |
 | 更新日時              | updated_at  | TIMESTAMP    |     | ○   | now()  |                        |
+
+---
+
+### profiles （プロフィール）
+
+| 論理名           | 項目名            | データ型     | PK  | NN  | 初期値 | 備考              |
+| ---------------- | ----------------- | ------------ | --- | --- | ------ | ----------------- |
+| ユーザー ID      | user_id           | UUID         | ○   | ○   |        | 外部キー:users.id |
+| ユーザー名       | name              | VARCHAR(100) |     | ○   |        |                   |
+| プロフィール画像 | profile_image_url | VARCHAR(255) |     |     |        |                   |
+| 登録日時         | created_at        | TIMESTAMP    |     | ○   | now()  |                   |
+| 更新日時         | updated_at        | TIMESTAMP    |     | ○   | now()  |                   |
 
 ---
 
@@ -64,6 +75,7 @@
 | メッセージ        | contents   | TEXT      |     | ○   |        |                   |
 | 登録日時          | created_at | TIMESTAMP |     | ○   | now()  |                   |
 | 更新日時          | updated_at | TIMESTAMP |     | ○   | now()  |                   |
+| 削除日時          | deleted_at | TIMESTAMP |     |     |        |                   |
 
 ---
 
