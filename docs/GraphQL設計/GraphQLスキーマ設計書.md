@@ -128,7 +128,6 @@ type RoomEdge {
 ```graphql
 type Message {
   id: ID! # メッセージ ID
-  name: String! # チャットルーム名
   sender: User! # 投稿ユーザー
   contents: String! # メッセージ
   createdAt: DateTime! # 登録日時
