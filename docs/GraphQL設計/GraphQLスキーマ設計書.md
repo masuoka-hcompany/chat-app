@@ -2,11 +2,11 @@
 
 ## Query 一覧
 
-| Query 名        | 説明                           |
-| --------------- | ------------------------------ |
-| room            | チャットルームを単体取得       |
-| roomsConnection | チャットルーム一覧用取得       |
-| messagesByRoom  | チャットルームのメッセージ取得 |
+| Query 名                 | 説明                           |
+| ------------------------ | ------------------------------ |
+| room                     | チャットルームを単体取得       |
+| roomsConnection          | チャットルーム一覧用取得       |
+| messagesConnectionByRoom | チャットルームのメッセージ取得 |
 
 ```graphql
 type Query {
@@ -17,7 +17,7 @@ type Query {
     last: Int
     before: String
   ): RoomConnection!
-  messagesByRoom(
+  messagesConnectionByRoom(
     roomId: ID!
     first: Int
     after: String
