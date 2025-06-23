@@ -56,17 +56,19 @@ type Mutation {
 
 ## 型定義
 
-| 種類  | 名称               | 内容                   |
-| ----- | ------------------ | ---------------------- |
-| type  | User               | ユーザー               |
-| type  | UserStatus         | ユーザーステータス     |
-| type  | Profile            | ユーザープロフィール   |
-| type  | Room               | チャットルーム         |
-| type  | Message            | メッセージ             |
-| type  | MessageConnection  | メッセージコネクション |
-| type  | MessageEdge        | メッセージエッジ       |
-| type  | PageInfo           | ページ情報             |
-| input | CreateMessageInput | メッセージ作成         |
+| 種類  | 名称               | 内容                       |
+| ----- | ------------------ | -------------------------- |
+| type  | User               | ユーザー                   |
+| type  | UserStatus         | ユーザーステータス         |
+| type  | Profile            | ユーザープロフィール       |
+| type  | Room               | チャットルーム             |
+| type  | RoomConnection     | チャットルームコネクション |
+| type  | RoomEdge           | チャットルームエッジ       |
+| type  | Message            | メッセージ                 |
+| type  | MessageConnection  | メッセージコネクション     |
+| type  | MessageEdge        | メッセージエッジ           |
+| type  | PageInfo           | ページ情報                 |
+| input | CreateMessageInput | メッセージ作成             |
 
 ```graphql
 type User {
@@ -161,9 +163,9 @@ type PageInfo {
 
 ```graphql
 input CreateMessageInput {
-  roomId: ID!
-  senderId: ID!
-  contents: String!
+  roomId: ID! # チャットルーム ID
+  senderId: ID! # 投稿ユーザー ID
+  contents: String! # メッセージ内容
 }
 ```
 
@@ -181,3 +183,5 @@ PageInfo: 次のページ有無やカーソル範囲など、ページ送りに�
 ## 備考
 
 - `createdAt` `updatedAt` は JST で返却する想定。
+
+- パフォーマンスを考慮して、`room` と `message` は分けて取得する仕様想定。
