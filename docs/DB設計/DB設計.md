@@ -71,7 +71,7 @@
 | ----------------- | ---------- | --------- | --- | --- | ------ | ----------------- |
 | メッセージ ID     | id         | UUID      | ○   | ○   |        | UUID で自動採番   |
 | チャットルーム ID | room_id    | UUID      |     | ○   |        | 外部キー:rooms.id |
-| 投稿ユーザー ID   | user_id    | UUID      |     | ○   |        | 外部キー:users.id |
+| 投稿ユーザー ID   | sender_id  | UUID      |     | ○   |        | 外部キー:users.id |
 | メッセージ        | contents   | TEXT      |     | ○   |        |                   |
 | 登録日時          | created_at | TIMESTAMP |     | ○   | now()  |                   |
 | 更新日時          | updated_at | TIMESTAMP |     | ○   | now()  |                   |
