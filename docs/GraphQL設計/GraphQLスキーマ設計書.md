@@ -52,6 +52,18 @@ type Mutation {
 }
 ```
 
+## Subscription 一覧
+
+| Mutation 名  | 説明                                   |
+| ------------ | -------------------------------------- |
+| messageAdded | 新しいメッセージが追加されたことを購読 |
+
+```graphql
+type Subscription {
+  messageAdded(roomId: ID!): Message
+}
+```
+
 ---
 
 ## 型定義
