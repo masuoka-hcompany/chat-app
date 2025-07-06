@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String     @id @default(uuid()) @map("id") @db.Uuid
+  email        String
+  userStatusId String     @map("user_status_id")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @default(now()) @updatedAt @map("updated_at")
+  userStatus   UserStatus @relation(fields: [userStatusId], references: [id])
+  profile      Profile?
+  createdRooms Room[]     @relation("CreatedRooms")
+  updatedRooms Room[]     @relation("UpdatedRooms")
+  messages     Message[]
+
+  @@index([email], name: "idx_users_email")
+  @@map("users")
+}
+
+model Profile {
+  userId          String   @id @map("user_id") @db.Uuid
+  name            String   @db.VarChar(100)
+  profileImageUrl String?  @map("profile_image_url") @db.VarChar(255)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at")
+  user            User     @relation(fields: [userId], references: [id])
+
+  @@map("profiles")
+}
+
+model UserStatus {
+  id          String   @id @db.VarChar(50)
+  name        String   @db.VarChar(100)
+  description String?
+  sortNo      Int      @default(0) @map("sort_no")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  users       User[]
+
+  @@map("user_statuses")
+}
+
+model Room {
+  id           String    @id @default(uuid()) @map("id") @db.Uuid
+  name         String    @db.VarChar(100)
+  description  String?
+  createUserId String    @map("create_user_id") @db.Uuid
+  updateUserId String    @map("update_user_id") @db.Uuid
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at")
+  creator      User      @relation("CreatedRooms", fields: [createUserId], references: [id])
+  updater      User      @relation("UpdatedRooms", fields: [updateUserId], references: [id])
+  messages     Message[]
+
+  @@map("rooms")
+}
+
+model Message {
+  id        String    @id @default(uuid()) @map("id") @db.Uuid
+  roomId    String    @map("room_id") @db.Uuid
+  senderId  String    @map("sender_id") @db.Uuid
+  contents  String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+  room      Room      @relation(fields: [roomId], references: [id])
+  sender    User      @relation(fields: [senderId], references: [id])
+
+  @@index([roomId], name: "idx_messages_room_id")
+  @@index([roomId, createdAt], name: "idx_messages_room_id_created_at")
+  @@map("messages")
+}
