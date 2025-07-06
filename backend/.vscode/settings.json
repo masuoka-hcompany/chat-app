@@ -1,0 +1,25 @@
+{
+  // TypeScript の自動型取得 (ATA) 機能を無効にします。
+  // これを true にすると、型定義ファイルは package.json に基づいてインストールされるものに限定され、
+  // プロジェクトの型定義をより明示的に管理できます。
+  // 不足している型がある場合は、`@types/xxx` を devDependencies に追加する必要があります。
+  "typescript.disableAutomaticTypeAcquisition": true,
+
+  // VS Code のデフォルトのコードフォーマッターとして Prettier 拡張機能 (`esbenp.prettier-vscode`) を設定します。
+  // これにより、ほとんどのファイルタイプでコードが Prettier によって整形されるようになります。
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // ファイルを保存する際に、自動的にコードをフォーマットするように設定します。
+  // これにより、手動でフォーマットを実行する手間が省け、常に整形されたコードを維持できます。
+  "editor.formatOnSave": true,
+
+  // Prisma スキーマファイル (`.prisma` 拡張子) 専用の設定です。
+  // これらのファイルに対しては、デフォルトのフォーマッターとして Prisma 拡張機能 (`Prisma.prisma`) を使用します。
+  // Prisma の構文に特化した適切なフォーマットが適用されます。
+  "[prisma]": { "editor.defaultFormatter": "Prisma.prisma" },
+
+  // ファイルを保存する際に実行するコードアクションを設定します。
+  // "source.fixAll.eslint" を指定することで、ESLint が検出した自動修正可能な問題をすべて修正します。
+  // これにより、Lint エラーを手動で直す手間が省け、コード品質と開発効率が向上します。
+  "editor.codeActionsOnSave": ["source.fixAll.eslint"]
+}
