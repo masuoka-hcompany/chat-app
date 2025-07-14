@@ -1,7 +1,10 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType, ID } from '@nestjs/graphql';
 
 @ObjectType()
 export class Profile {
+  @Field(() => ID, { nullable: false, description: 'ユーザー ID' })
+  userId!: string;
+
   @Field(() => String, { nullable: false, description: 'ユーザー名' })
   name!: string;
 

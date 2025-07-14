@@ -1,0 +1,160 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type UserStatus {
+  """ユーザーステータス ID"""
+  id: ID!
+
+  """ユーザーステータス名"""
+  name: String!
+
+  """並び順"""
+  sortNo: Int!
+
+  """作成日時"""
+  createdAt: DateTime!
+
+  """更新日時"""
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Profile {
+  """ユーザー ID"""
+  userId: ID!
+
+  """ユーザー名"""
+  name: String!
+
+  """プロフィール画像"""
+  profileImageUrl: String
+
+  """作成日時"""
+  createdAt: DateTime!
+
+  """更新日時"""
+  updatedAt: DateTime!
+}
+
+type User {
+  """ユーザー ID"""
+  id: ID!
+
+  """メールアドレス"""
+  email: String!
+
+  """作成日時"""
+  createdAt: DateTime!
+
+  """更新日時"""
+  updatedAt: DateTime!
+
+  """ユーザーステータス"""
+  userStatus: UserStatus!
+
+  """プロフィール"""
+  profile: Profile
+}
+
+type Room {
+  """チャットルーム ID"""
+  id: ID!
+
+  """チャットルーム名"""
+  name: String!
+
+  """説明"""
+  description: String
+
+  """作成日時"""
+  createdAt: DateTime!
+
+  """更新日時"""
+  updatedAt: DateTime!
+
+  """作成ユーザーID"""
+  createUserId: String!
+
+  """更新ユーザーID"""
+  updateUserId: String!
+
+  """作成ユーザー"""
+  creator: User!
+
+  """更新ユーザー"""
+  updater: User!
+}
+
+type Message {
+  """メッセージ ID"""
+  id: ID!
+
+  """投稿ユーザー"""
+  sender: User!
+
+  """メッセージ内容"""
+  contents: String!
+
+  """作成日時"""
+  createdAt: DateTime!
+
+  """更新日時"""
+  updatedAt: DateTime!
+}
+
+type MessageEdge {
+  """このエッジを一意に識別するカーソル"""
+  cursor: String!
+
+  """メッセージ"""
+  node: Message!
+}
+
+type PageInfo {
+  """次のページが存在するか"""
+  hasNextPage: Boolean!
+
+  """前のページが存在するか"""
+  hasPreviousPage: Boolean!
+
+  """現在のページで最初の要素のカーソル"""
+  startCursor: String
+
+  """現在のページで最後の要素のカーソル"""
+  endCursor: String
+}
+
+type MessageConnection {
+  """メッセージのエッジのリスト"""
+  edges: [MessageEdge!]!
+
+  """ページ情報"""
+  pageInfo: PageInfo!
+
+  """全体のアイテム数"""
+  totalCount: Int!
+}
+
+type Query {
+  room(id: ID!): Room
+  messagesConnectionByRoom(
+    roomId: ID!
+
+    """取得する最初の件数"""
+    first: Int
+
+    """取得する最後の件数"""
+    last: Int
+
+    """ページネーション用のカーソル（次ページ）"""
+    after: String
+
+    """ページネーション用のカーソル（前ページ）"""
+    before: String
+  ): MessageConnection!
+}

@@ -1,5 +1,5 @@
 import { Field, ObjectType, ID } from '@nestjs/graphql';
-import { UserStatus } from './user-status.model';
+import { UserStatus } from '../../modules/user-status/graphql-types/user-status.model';
 import { Profile } from './profile.model';
 
 @ObjectType()

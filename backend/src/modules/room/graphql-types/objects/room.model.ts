@@ -1,5 +1,5 @@
 import { Field, ObjectType, ID } from '@nestjs/graphql';
-import { User } from '../../../user/graphql-types/objects/user.model';
+import { User } from 'src/modules/user/graphql-types/objects/user.model';
 
 @ObjectType()
 export class Room {
@@ -17,6 +17,12 @@ export class Room {
 
   @Field(() => Date, { nullable: false, description: '更新日時' })
   updatedAt!: Date;
+
+  @Field(() => String, { nullable: false, description: '作成ユーザーID' })
+  createUserId!: string;
+
+  @Field(() => String, { nullable: false, description: '更新ユーザーID' })
+  updateUserId!: string;
 
   @Field(() => User, { nullable: false, description: '作成ユーザー' })
   creator?: User;
