@@ -1,4 +1,6 @@
+import { CreateMessageInput } from '../../graphql-types/inputs/create-message.input';
 import { MessageConnection } from '../../graphql-types/objects/message-connection.mode';
+import { Message } from '../../graphql-types/objects/message.model';
 
 export interface FetchMessagesConnectionParams {
   roomId: string;
@@ -9,6 +11,7 @@ export interface FetchMessagesConnectionParams {
 }
 
 export interface IMessageRepository {
+  create(input: CreateMessageInput): Promise<Message>;
   fetchMessagesConnection(
     params: FetchMessagesConnectionParams,
   ): Promise<MessageConnection>;

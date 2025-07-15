@@ -4,10 +4,29 @@ import {
   FetchMessagesConnectionParams,
   IMessageRepository,
 } from './interfaces/interface.message.repository';
+import { CreateMessageInput } from '../graphql-types/inputs/create-message.input';
 
 @Injectable()
 export class MessageRepository implements IMessageRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  async create(input: CreateMessageInput) {
+    const { roomId, senderId, contents } = input;
+    return this.prisma.message.create({
+      data: {
+        roomId,
+        senderId,
+        contents,
+      },
+      include: {
+        sender: {
+          include: {
+            profile: true,
+          },
+        },
+      },
+    });
+  }
 
   async fetchMessagesConnection(params: FetchMessagesConnectionParams) {
     const { roomId, first, after, last, before } = params;

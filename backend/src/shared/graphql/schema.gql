@@ -158,3 +158,22 @@ type Query {
     before: String
   ): MessageConnection!
 }
+
+type Mutation {
+  createMessage(input: CreateMessageInput!): Message!
+}
+
+input CreateMessageInput {
+  """チャットルーム ID"""
+  roomId: ID!
+
+  """投稿ユーザー ID"""
+  senderId: ID!
+
+  """メッセージ内容"""
+  contents: String!
+}
+
+type Subscription {
+  messageAdded: Message!
+}
