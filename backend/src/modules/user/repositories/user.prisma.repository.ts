@@ -14,6 +14,7 @@ export class UserPrismaRepository implements IUserRepository {
       },
       include: {
         profile: true,
+        userStatus: true,
       },
     });
   }

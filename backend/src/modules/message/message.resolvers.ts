@@ -40,7 +40,7 @@ export class MessageResolver {
 
   @Mutation(() => Message)
   async createMessage(@Args('input') input: CreateMessageInput) {
-    const message = this.createMessageUseCase.execute(input);
+    const message = await this.createMessageUseCase.execute(input);
     this.pubSub.publish('messageAdded', { messageAdded: message });
     return message;
   }
