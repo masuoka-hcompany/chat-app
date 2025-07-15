@@ -13,10 +13,6 @@ export class GetUserUseCase {
   ) {}
 
   async execute(id: string): Promise<User | null> {
-    const user = await this.userRepository.findById(id);
-    if (!user) {
-      return null;
-    }
-    return user;
+    return this.userRepository.findById(id);
   }
 }

@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   IRoomRepository,
   IRoomRepositoryToken,
@@ -12,11 +12,7 @@ export class GetRoomUseCase {
     private readonly roomRepository: IRoomRepository,
   ) {}
 
-  async execute(id: string): Promise<Room> {
-    const room = await this.roomRepository.findById(id);
-    if (!room) {
-      throw new NotFoundException('Room not found');
-    }
-    return room;
+  async execute(id: string): Promise<Room | null> {
+    return await this.roomRepository.findById(id);
   }
 }
