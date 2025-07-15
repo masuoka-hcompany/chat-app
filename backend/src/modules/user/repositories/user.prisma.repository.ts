@@ -13,7 +13,7 @@ export class UserPrismaRepository implements IUserRepository {
         id,
       },
       include: {
-        profile: true, // Include profile relation
+        profile: true,
       },
     });
   }
