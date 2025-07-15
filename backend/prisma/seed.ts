@@ -13,6 +13,7 @@ async function main() {
     },
   });
 
+  // TODO:以下はテスト用のデータ。後々削除予定。
   const user = await prisma.user.upsert({
     where: { id: 'b6e2b5e2-3c4a-4e1a-9c2a-123456789abc' },
     update: {},
