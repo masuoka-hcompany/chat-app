@@ -15,6 +15,7 @@ services:
     volumes:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules
+      - /usr/src/app/generated
     depends_on:
       - db
 

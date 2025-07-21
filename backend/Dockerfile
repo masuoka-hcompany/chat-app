@@ -11,18 +11,21 @@ ENV TZ=Asia/Tokyo
 # pnpm を有効化
 RUN corepack enable
 
+RUN mkdir -p /usr/src/app/generated/prisma-nestjs-graphql && chown -R node:node /usr/src/app/generated
+RUN mkdir -p /usr/src/app/node_modules && chown -R node:node /usr/src/app/node_modules
+
 USER node
 
 WORKDIR /usr/src/app
 
 COPY package.json pnpm-lock.yaml ./
 
+RUN pnpm config set store-dir /home/node/.local/share/pnpm/store/v10 --global
+
 # --frozen-lockfile 指定で、pnpm-lock.yaml に基づいてインストール
 RUN pnpm install --frozen-lockfile
 
 COPY . .
-
-RUN mkdir /usr/src/app/generated && chown -R node:node /usr/src/app/generated
 
 RUN pnpm prisma generate
 
