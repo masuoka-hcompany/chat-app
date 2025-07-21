@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      neverthrow:
+        specifier: ^8.2.0
+        version: 8.2.0
       next:
         specifier: 15.4.2
         version: 15.4.2(@babel/core@7.28.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -663,6 +666,11 @@ packages:
 
   '@repeaterjs/repeater@3.0.6':
     resolution: {integrity: sha512-Javneu5lsuhwNCryN+pXH93VPQ8g0dBX7wItHFgYiwQmzE1sVdg5tWHiOgHywzL2W21XQopa7IwIEnNbmeUJYA==}
+
+  '@rollup/rollup-linux-x64-gnu@4.45.1':
+    resolution: {integrity: sha512-+E/lYl6qu1zqgPEnTrs4WysQtvc/Sh4fC2nByfFExqgYrqkKWp1tWIbe+ELhixnenSpBbLXNi6vbEEJ8M7fiHw==}
+    cpu: [x64]
+    os: [linux]
 
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
@@ -1993,6 +2001,10 @@ packages:
 
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
+
+  neverthrow@8.2.0:
+    resolution: {integrity: sha512-kOCT/1MCPAxY5iUV3wytNFUMUolzuwd/VF/1KCx7kf6CutrOsTie+84zTGTpgQycjvfLdBBdvBvFLqFD2c0wkQ==}
+    engines: {node: '>=18'}
 
   next@15.4.2:
     resolution: {integrity: sha512-oH1rmFso+84NIkocfuxaGKcXIjMUTmnzV2x0m8qsYtB4gD6iflLMESXt5XJ8cFgWMBei4v88rNr/j+peNg72XA==}
@@ -3495,6 +3507,9 @@ snapshots:
   '@nolyfill/is-core-module@1.0.39': {}
 
   '@repeaterjs/repeater@3.0.6': {}
+
+  '@rollup/rollup-linux-x64-gnu@4.45.1':
+    optional: true
 
   '@rtsao/scc@1.1.0': {}
 
@@ -5030,6 +5045,10 @@ snapshots:
   napi-postinstall@0.3.2: {}
 
   natural-compare@1.4.0: {}
+
+  neverthrow@8.2.0:
+    optionalDependencies:
+      '@rollup/rollup-linux-x64-gnu': 4.45.1
 
   next@15.4.2(@babel/core@7.28.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
