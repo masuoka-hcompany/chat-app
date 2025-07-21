@@ -22,6 +22,10 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
+RUN mkdir /usr/src/app/generated && chown -R node:node /usr/src/app/generated
+
+RUN pnpm prisma generate
+
 EXPOSE 3200
 
 CMD ["pnpm", "run", "start:dev"]
