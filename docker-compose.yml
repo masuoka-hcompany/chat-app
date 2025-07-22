@@ -1,6 +1,20 @@
 version: '3.8'
 
 services:
+  frontend:
+    container_name: chat-app-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    tty: true
+    ports:
+      - "3201:3201"
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - backend
+
   backend:
     container_name: chat-app-backend
     build:
