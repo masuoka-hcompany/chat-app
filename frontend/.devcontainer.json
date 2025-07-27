@@ -1,0 +1,23 @@
+{
+  "name": "chat-app-frontend",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "frontend",
+  "workspaceFolder": "/usr/src/app",
+  "shutdownAction": "none",
+  "customizations": {
+    // Configure properties specific to VS Code.
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "kumar-harsh.graphql-for-vscode",
+        "GitHub.copilot",
+        "GitHub.copilot-chat"
+      ],
+      "settings": {
+        "prettier.prettierPath": "./node_modules/prettier"
+      }
+    }
+  },
+  "initializeCommand": "echo 'Hello World!'"
+}
