@@ -1,11 +1,5 @@
-import { ChatBubbleVariants } from "@/components/chat-bubble-examples";
-import { ChatInputDemo } from "@/components/chat-input-example";
+import { redirect } from "next/navigation";
 
-export default function Home() {
-  return (
-    <>
-      <ChatBubbleVariants />
-      <ChatInputDemo />
-    </>
-  );
+export default function Page() {
+  redirect("/chat/1");
 }
