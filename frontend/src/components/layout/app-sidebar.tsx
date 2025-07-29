@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Box } from "lucide-react";
 
 import {
   Collapsible,
@@ -39,7 +39,12 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
-      <SidebarHeader>chat-app</SidebarHeader>
+      <SidebarHeader>
+        <span className="flex items-center gap-1.5">
+          <Box size={20} strokeWidth={2} className="mt-1" />
+          <span className="text-base font-semibold">chat-app</span>
+        </span>
+      </SidebarHeader>
       <SidebarContent className="gap-0">
         {/* We create a collapsible SidebarGroup for each parent. */}
         {data.navMain.map((item) => (
