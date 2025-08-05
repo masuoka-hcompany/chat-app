@@ -1,6 +1,6 @@
 import { ChatMessageList } from "./chat-message-list";
 
-export function ChatMessageContainer() {
+export function ChatMessageListContainer() {
   // ダミーデータ
   const messages = [
     {
