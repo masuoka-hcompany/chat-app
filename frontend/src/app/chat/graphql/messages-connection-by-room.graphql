@@ -1,0 +1,21 @@
+query MessagesByRoom {
+  messagesConnectionByRoom(
+    roomId: "6508a8a7-2b77-49ee-947e-f01260a1e295"
+    last: 10
+  ) {
+    totalCount
+    edges {
+      cursor
+      node {
+        ...MessageItemFragment
+        createdAt
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+  }
+}

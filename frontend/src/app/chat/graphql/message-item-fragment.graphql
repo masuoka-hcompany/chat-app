@@ -1,0 +1,10 @@
+fragment MessageItemFragment on Message {
+  id
+  contents
+  sender {
+    profile {
+      name
+      profileImageUrl
+    }
+  }
+}
