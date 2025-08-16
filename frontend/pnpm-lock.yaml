@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@graphql-typed-document-node/core':
+        specifier: ^3.2.0
+        version: 3.2.0(graphql@16.11.0)
       '@radix-ui/react-avatar':
         specifier: ^1.1.10
         version: 1.1.10(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -38,6 +41,9 @@ importers:
       graphql-request:
         specifier: ^7.2.0
         version: 7.2.0(graphql@16.11.0)
+      graphql-ws:
+        specifier: ^6.0.6
+        version: 6.0.6(graphql@16.11.0)(ws@8.18.3)
       lucide-react:
         specifier: ^0.526.0
         version: 0.526.0(react@19.1.0)
@@ -73,11 +79,14 @@ importers:
         specifier: ^3
         version: 3.3.1
       '@graphql-codegen/cli':
-        specifier: ^5.0.7
+        specifier: 5.0.7
         version: 5.0.7(@parcel/watcher@2.5.1)(@types/node@20.19.9)(graphql@16.11.0)(typescript@5.8.3)
       '@graphql-codegen/client-preset':
-        specifier: ^4.8.3
+        specifier: 4.8.3
         version: 4.8.3(graphql@16.11.0)
+      '@graphql-codegen/introspection':
+        specifier: 4.0.3
+        version: 4.0.3(graphql@16.11.0)
       '@parcel/watcher':
         specifier: ^2.5.1
         version: 2.5.1
@@ -328,6 +337,11 @@ packages:
   '@graphql-codegen/gql-tag-operations@4.0.17':
     resolution: {integrity: sha512-2pnvPdIG6W9OuxkrEZ6hvZd142+O3B13lvhrZ48yyEBh2ujtmKokw0eTwDHtlXUqjVS0I3q7+HB2y12G/m69CA==}
     engines: {node: '>=16'}
+    peerDependencies:
+      graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+
+  '@graphql-codegen/introspection@4.0.3':
+    resolution: {integrity: sha512-4cHRG15Zu4MXMF4wTQmywNf4+fkDYv5lTbzraVfliDnB8rJKcaurQpRBi11KVuQUe24YTq/Cfk4uwewfNikWoA==}
     peerDependencies:
       graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
 
@@ -4017,6 +4031,15 @@ snapshots:
       '@graphql-codegen/visitor-plugin-common': 5.8.0(graphql@16.11.0)
       '@graphql-tools/utils': 10.9.1(graphql@16.11.0)
       auto-bind: 4.0.0
+      graphql: 16.11.0
+      tslib: 2.6.3
+    transitivePeerDependencies:
+      - encoding
+
+  '@graphql-codegen/introspection@4.0.3(graphql@16.11.0)':
+    dependencies:
+      '@graphql-codegen/plugin-helpers': 5.1.1(graphql@16.11.0)
+      '@graphql-codegen/visitor-plugin-common': 5.8.0(graphql@16.11.0)
       graphql: 16.11.0
       tslib: 2.6.3
     transitivePeerDependencies:

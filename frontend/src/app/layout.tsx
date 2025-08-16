@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
+import { UrqlClientProvider } from "@/components/provider/urql-client-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,10 +26,12 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>{children}</SidebarInset>
-        </SidebarProvider>
+        <UrqlClientProvider>
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>{children}</SidebarInset>
+          </SidebarProvider>
+        </UrqlClientProvider>
       </body>
     </html>
   );

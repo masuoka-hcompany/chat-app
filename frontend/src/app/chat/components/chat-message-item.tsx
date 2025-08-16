@@ -4,7 +4,8 @@ import {
   ChatBubbleMessage,
 } from "@/components/ui/chat-bubble";
 
-type ChatMessageItemProps = {
+export type ChatMessageItemProps = {
+  id: string;
   variant: "sent" | "received";
   avatarSrc: string;
   avatarFallback: string;

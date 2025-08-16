@@ -1,23 +1,45 @@
+import { graphqlRequestClient } from "@/lib/graphql-request/client";
 import { ChatMessageList } from "./chat-message-list";
+import {
+  MessageItemFragmentFragmentDoc,
+  MessagesByRoomDocument,
+  MessagesByRoomQuery,
+} from "@/gql/graphql";
+import { ChatMessageItemProps } from "./chat-message-item";
+import { useFragment } from "@/gql";
 
-export function ChatMessageListContainer() {
-  // ダミーデータ
-  const messages = [
-    {
-      id: 1,
-      variant: "sent" as const,
-      avatarSrc: "https://ui.shadcn.com/avatars/01.png",
-      avatarFallback: "US",
-      message: "I have a question about the library.",
-    },
-    {
-      id: 2,
-      variant: "received" as const,
-      avatarSrc: "https://ui.shadcn.com/avatars/02.png",
-      avatarFallback: "AI",
-      message: "Sure, I'd be happy to help!",
-    },
-  ];
+function mapGraphQLMessagesToChatMessages(
+  graphqlData: MessagesByRoomQuery
+): ChatMessageItemProps[] {
+  return graphqlData.messagesConnectionByRoom.edges.map((edge, index) => {
+    const messageFragment = useFragment(
+      MessageItemFragmentFragmentDoc,
+      edge.node
+    );
+
+    // メッセージの送信者を判定するロジック（実際の実装に合わせて調整してください）
+    const isSentByCurrentUser = index % 2 === 0; // 仮の判定ロジック
+
+    const senderName = messageFragment.sender?.profile?.name || "";
+    const avatarFallback = senderName ? senderName.charAt(0).toUpperCase() : "";
+
+    return {
+      id: messageFragment.id,
+      variant: isSentByCurrentUser ? "sent" : "received",
+      avatarSrc: messageFragment.sender?.profile?.profileImageUrl || "",
+      avatarFallback: avatarFallback,
+      message: messageFragment.contents || "",
+    };
+  });
+}
+
+export async function ChatMessageListContainer() {
+  const messagesByRoomDocument = await graphqlRequestClient.request(
+    MessagesByRoomDocument,
+    {}
+  );
+
+  const messages = mapGraphQLMessagesToChatMessages(messagesByRoomDocument);
 
   return <ChatMessageList messages={messages} />;
 }
