@@ -17,7 +17,15 @@ type ChatMessageListProps = {
 
 export function ChatMessageList({ messages }: ChatMessageListProps) {
   const [allMessages, setAllMessages] = useState(messages);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const loadPreviousMessages = async () => {
+    setIsLoadingMore(true);
+    setTimeout(() => setIsLoadingMore(false), 1000); // ダミー: 1秒後に解除
+  };
 
   useSubscription(
     { query: MessageAddedDocument },
@@ -48,20 +56,37 @@ export function ChatMessageList({ messages }: ChatMessageListProps) {
     setAllMessages(messages);
   }, [messages]);
 
-  useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTo({
-        top: containerRef.current.scrollHeight,
-        behavior: "instant",
-      });
-    }
-  }, []);
+  useScrollToBottomInstant(containerRef);
 
   return (
     <div ref={containerRef} className="w-full h-full space-y-8 px-40 py-16">
+      {hasMore && (
+        <div className="w-full py-2">
+          <button
+            onClick={loadPreviousMessages}
+            className="w-full py-2 bg-gray-100"
+            disabled={isLoadingMore}
+          >
+            {isLoadingMore ? "読み込み中..." : "もっと読む"}
+          </button>
+        </div>
+      )}
       {allMessages.map((msg) => (
         <ChatMessageItem key={msg.id} {...msg} />
       ))}
     </div>
   );
+}
+
+export function useScrollToBottomInstant(
+  ref: React.RefObject<HTMLDivElement | null>
+) {
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.scrollTo({
+        top: ref.current.scrollHeight,
+        behavior: "instant",
+      });
+    }
+  }, [ref]);
 }
