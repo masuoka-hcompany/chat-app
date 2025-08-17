@@ -52,7 +52,7 @@ export function ChatMessageList({ messages }: ChatMessageListProps) {
     if (containerRef.current) {
       containerRef.current.scrollTo({
         top: containerRef.current.scrollHeight,
-        behavior: "smooth",
+        behavior: "instant",
       });
     }
   }, []);
