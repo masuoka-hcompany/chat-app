@@ -22,7 +22,12 @@ export function ChatMessageItem({
     <ChatBubble variant={variant}>
       <ChatBubbleAvatar fallback={avatarFallback} src={avatarSrc} />
       <ChatBubbleMessage variant={variant === "sent" ? "sent" : undefined}>
-        {message}
+        {message.split("\n").map((line, idx) => (
+          <span key={idx}>
+            {line}
+            <br />
+          </span>
+        ))}
       </ChatBubbleMessage>
     </ChatBubble>
   );
