@@ -3,6 +3,7 @@ import {
   ChatBubbleAvatar,
   ChatBubbleMessage,
 } from "@/components/ui/chat-bubble";
+import { renderWithLineBreaks } from "@/lib/render-with-line-breaks";
 
 export type ChatMessageItemProps = {
   id: string;
@@ -22,12 +23,7 @@ export function ChatMessageItem({
     <ChatBubble variant={variant}>
       <ChatBubbleAvatar fallback={avatarFallback} src={avatarSrc} />
       <ChatBubbleMessage variant={variant === "sent" ? "sent" : undefined}>
-        {message.split("\n").map((line, idx) => (
-          <span key={idx}>
-            {line}
-            <br />
-          </span>
-        ))}
+        {renderWithLineBreaks(message)}
       </ChatBubbleMessage>
     </ChatBubble>
   );
