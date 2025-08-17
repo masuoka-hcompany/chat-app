@@ -1,0 +1,8 @@
+fragment MessageConnectionPageInfoFragment on MessageConnection {
+  pageInfo {
+    hasNextPage
+    hasPreviousPage
+    startCursor
+    endCursor
+  }
+}
