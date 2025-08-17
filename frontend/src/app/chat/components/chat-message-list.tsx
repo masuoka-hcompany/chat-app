@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSubscription } from "urql";
 import { ChatMessageItem, ChatMessageItemProps } from "./chat-message-item";
 import {
@@ -9,6 +9,7 @@ import {
   MessageItemFragmentFragmentDoc,
 } from "@/gql/graphql";
 import { useFragment } from "@/gql";
+import { mapGraphQLMessageToChatMessage } from "../lib/message-mapper";
 
 type ChatMessageListProps = {
   messages: ChatMessageItemProps[];
@@ -16,33 +17,30 @@ type ChatMessageListProps = {
 
 export function ChatMessageList({ messages }: ChatMessageListProps) {
   const [allMessages, setAllMessages] = useState(messages);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useSubscription(
     { query: MessageAddedDocument },
     (
       prev: MessageAddedSubscription | undefined,
-      newMsg: MessageAddedSubscription
+      newMessage: MessageAddedSubscription
     ) => {
-      if (!newMsg?.messageAdded)
+      if (!newMessage?.messageAdded)
         return prev ?? ({} as MessageAddedSubscription);
-      const fragment = newMsg.messageAdded;
 
+      const fragment = newMessage.messageAdded;
       const messageFragment = useFragment(
         MessageItemFragmentFragmentDoc,
         fragment
       );
 
-      const msg: ChatMessageItemProps = {
-        id: messageFragment.id,
-        variant: "received", // 必要に応じて判定
-        avatarSrc: messageFragment.sender?.profile?.profileImageUrl || "",
-        avatarFallback: messageFragment.sender?.profile?.name?.charAt(0) ?? "",
-        message: messageFragment.contents,
-      };
+      const message = mapGraphQLMessageToChatMessage(messageFragment, 0);
+
       setAllMessages((old) =>
-        old.some((m) => m.id === msg.id) ? old : [...old, msg]
+        old.some((m) => m.id === message.id) ? old : [...old, message]
       );
-      return newMsg;
+
+      return newMessage;
     }
   );
 
@@ -50,8 +48,17 @@ export function ChatMessageList({ messages }: ChatMessageListProps) {
     setAllMessages(messages);
   }, [messages]);
 
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTo({
+        top: containerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, []);
+
   return (
-    <div className="w-full h-full space-y-8 px-40 py-16">
+    <div ref={containerRef} className="w-full h-full space-y-8 px-40 py-16">
       {allMessages.map((msg) => (
         <ChatMessageItem key={msg.id} {...msg} />
       ))}
