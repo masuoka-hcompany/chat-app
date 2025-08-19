@@ -11,13 +11,13 @@ import { createClient as createWSClient } from "graphql-ws";
 const wsClient =
   typeof window !== "undefined"
     ? createWSClient({
-        url: "ws://localhost:3200/graphql", // TODO: envから取得
+        url: process.env.NEXT_PUBLIC_WS_GRAPHQL_API_ENDPOINT!,
         connectionParams: () => ({}),
       })
     : null;
 
 export const urqlClient = new Client({
-  url: "http://localhost:3200/graphql", // TODO: envから取得
+  url: process.env.NEXT_PUBLIC_GRAPHQL_API_ENDPOINT!,
   exchanges: [
     cacheExchange,
     fetchExchange,
