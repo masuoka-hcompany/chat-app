@@ -20,7 +20,7 @@ export function ChatInputForm({
   onStop,
 }: ChatInputFormProps) {
   return (
-    <div className="w-full h-full space-y-8 px-40 py-16">
+    <div className="w-full h-full space-y-8 px-4 py-4 sm:px-12 sm:py-8 md:px-24 md:py-12 lg:px-40 lg:py-16">
       <ChatInput
         variant="default"
         value={value}
