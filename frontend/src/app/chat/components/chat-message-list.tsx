@@ -1,65 +1,61 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useSubscription } from "urql";
+import { useState } from "react";
+import { useClient } from "urql";
 import { ChatMessageItem, ChatMessageItemProps } from "./chat-message-item";
 import {
-  MessageAddedDocument,
-  MessageAddedSubscription,
-  MessageItemFragmentFragmentDoc,
+  MessageConnectionPageInfoFragmentFragment,
+  MessageConnectionPageInfoFragmentFragmentDoc,
+  MessagesByRoomDocument,
 } from "@/gql/graphql";
 import { useFragment } from "@/gql";
-import { mapGraphQLMessageToChatMessage } from "../lib/message-mapper";
+import { mapGraphQLMessagesToChatMessages } from "../lib/message-mapper";
+import { useRealtimeMessages } from "../hooks/use-realtime-messages";
 
 type ChatMessageListProps = {
   messages: ChatMessageItemProps[];
+  connection: MessageConnectionPageInfoFragmentFragment;
 };
 
-export function ChatMessageList({ messages }: ChatMessageListProps) {
-  const [allMessages, setAllMessages] = useState(messages);
-  const [hasMore, setHasMore] = useState(true);
+export function ChatMessageList({
+  messages,
+  connection,
+}: ChatMessageListProps) {
+  const [allMessages, setAllMessages] = useRealtimeMessages(messages);
+  const [hasMore, setHasMore] = useState(connection.pageInfo.hasPreviousPage);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-
-  const containerRef = useRef<HTMLDivElement>(null);
+  const client = useClient();
 
   const loadPreviousMessages = async () => {
     setIsLoadingMore(true);
-    setTimeout(() => setIsLoadingMore(false), 1000); // ダミー: 1秒後に解除
+    const beforeCursor = allMessages.length > 0 ? allMessages[0].id : undefined;
+    const result = await client
+      .query(MessagesByRoomDocument, {
+        roomId: "6508a8a7-2b77-49ee-947e-f01260a1e295", // TODO: 仮実装なので、取り急ぎ決め打ちのIDを指定。後々動的に取得する。
+        last: 5,
+        before: beforeCursor,
+      })
+      .toPromise();
+
+    await new Promise((resolve) => setTimeout(resolve, 200)); // 取得速度が早すぎるので、あえて少し遅延させる。
+
+    if (result.data?.messagesConnectionByRoom?.edges) {
+      const newMessages = mapGraphQLMessagesToChatMessages(result.data);
+      setAllMessages((prev) => [...newMessages, ...prev]);
+
+      const messageConnectionPageInfoFragment = useFragment(
+        MessageConnectionPageInfoFragmentFragmentDoc,
+        result.data?.messagesConnectionByRoom
+      );
+      setHasMore(
+        messageConnectionPageInfoFragment.pageInfo.hasPreviousPage ?? false
+      );
+    }
+    setIsLoadingMore(false);
   };
 
-  useSubscription(
-    { query: MessageAddedDocument },
-    (
-      prev: MessageAddedSubscription | undefined,
-      newMessage: MessageAddedSubscription
-    ) => {
-      if (!newMessage?.messageAdded)
-        return prev ?? ({} as MessageAddedSubscription);
-
-      const fragment = newMessage.messageAdded;
-      const messageFragment = useFragment(
-        MessageItemFragmentFragmentDoc,
-        fragment
-      );
-
-      const message = mapGraphQLMessageToChatMessage(messageFragment, 0);
-
-      setAllMessages((old) =>
-        old.some((m) => m.id === message.id) ? old : [...old, message]
-      );
-
-      return newMessage;
-    }
-  );
-
-  useEffect(() => {
-    setAllMessages(messages);
-  }, [messages]);
-
-  useScrollToBottomInstant(containerRef);
-
   return (
-    <div ref={containerRef} className="w-full h-full space-y-8 px-40 py-16">
+    <div className="w-full h-full space-y-8 px-40 py-16">
       {hasMore && (
         <div className="w-full py-2">
           <button
@@ -76,17 +72,4 @@ export function ChatMessageList({ messages }: ChatMessageListProps) {
       ))}
     </div>
   );
-}
-
-export function useScrollToBottomInstant(
-  ref: React.RefObject<HTMLDivElement | null>
-) {
-  useEffect(() => {
-    if (ref.current) {
-      ref.current.scrollTo({
-        top: ref.current.scrollHeight,
-        behavior: "instant",
-      });
-    }
-  }, [ref]);
 }

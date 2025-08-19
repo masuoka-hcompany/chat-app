@@ -11,20 +11,22 @@ export async function ChatMessageListContainer() {
   const messagesByRoomDocument = await graphqlRequestClient.request(
     MessagesByRoomDocument,
     {
-      roomId: "6508a8a7-2b77-49ee-947e-f01260a1e295",
+      roomId: "6508a8a7-2b77-49ee-947e-f01260a1e295", // TODO: 仮実装なので、取り急ぎ決め打ちのIDを指定。後々動的に取得する。
       last: 10,
     }
   );
 
   const messages = mapGraphQLMessagesToChatMessages(messagesByRoomDocument);
 
-  console.log(messagesByRoomDocument);
+  const messageConnectionPageInfoFragment = useFragment(
+    MessageConnectionPageInfoFragmentFragmentDoc,
+    messagesByRoomDocument.messagesConnectionByRoom
+  );
 
-  // まだうまくいっていない
-  // const messageFragment = useFragment(
-  //   MessageConnectionPageInfoFragmentFragmentDoc,
-  //   messagesByRoomDocument.messagesConnectionByRoom.pageInfo
-  // );
-
-  return <ChatMessageList messages={messages} />;
+  return (
+    <ChatMessageList
+      messages={messages}
+      connection={messageConnectionPageInfoFragment}
+    />
+  );
 }
