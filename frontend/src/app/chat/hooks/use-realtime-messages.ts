@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSubscription } from "urql";
 import { ChatMessageItemProps } from "../components/chat-message-item";
-import {
-  MessageAddedDocument,
-  MessageAddedSubscription,
-  MessageItemFragmentFragmentDoc,
-} from "@/gql/graphql";
+import { MessageAddedDocument, MessageAddedSubscription } from "@/gql/graphql";
 import { mapGraphQLMessageToChatMessage } from "../lib/message-mapper";
 
 /**
