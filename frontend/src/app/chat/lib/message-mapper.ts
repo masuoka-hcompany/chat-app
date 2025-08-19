@@ -5,25 +5,25 @@ import {
 } from "@/gql/graphql";
 import { ChatMessageItemProps } from "../components/chat-message-item";
 import { useFragment } from "@/gql/fragment-masking";
+import { getLoggedInUserId } from "./get-logged-in-user-id";
 
 export function mapGraphQLMessagesToChatMessages(
   graphqlData: MessagesByRoomQuery
 ): ChatMessageItemProps[] {
-  return graphqlData.messagesConnectionByRoom.edges.map((edge, index) => {
+  return graphqlData.messagesConnectionByRoom.edges.map((edge) => {
     const messageFragment = useFragment(
       MessageItemFragmentFragmentDoc,
       edge.node
     );
-    return mapGraphQLMessageToChatMessage(messageFragment, index);
+    return mapGraphQLMessageToChatMessage(messageFragment);
   });
 }
 
 export function mapGraphQLMessageToChatMessage(
-  messageFragment: MessageItemFragmentFragment,
-  index: number
+  messageFragment: MessageItemFragmentFragment
 ): ChatMessageItemProps {
-  const isSentByCurrentUser = index % 2 === 0;
-
+  const isSentByCurrentUser =
+    messageFragment.sender?.id === getLoggedInUserId();
   const senderName = messageFragment.sender?.profile?.name || "";
   const avatarFallback = senderName ? senderName.charAt(0).toUpperCase() : "";
 
