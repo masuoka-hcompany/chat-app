@@ -22,7 +22,7 @@ export function ChatInputArea() {
 
     const result = await sendMessageAction(value);
     if (result.ok) {
-      toast(result.message ?? "送信しました");
+      toast(result.message ?? "送信しました"); // TODO: toast周りの挙動は未調整
     } else {
       toast(`送信に失敗しました: ${result.error}`);
     }
