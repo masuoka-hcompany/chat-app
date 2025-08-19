@@ -1,11 +1,7 @@
 import { graphqlRequestClient } from "@/lib/graphql-request/client";
 import { ChatMessageList } from "./chat-message-list";
-import {
-  MessageConnectionPageInfoFragmentFragmentDoc,
-  MessagesByRoomDocument,
-} from "@/gql/graphql";
+import { MessagesByRoomDocument } from "@/gql/graphql";
 import { mapGraphQLMessagesToChatMessages } from "../lib/message-mapper";
-import { useFragment } from "@/gql/fragment-masking";
 
 export async function ChatMessageListContainer() {
   const messagesByRoomDocument = await graphqlRequestClient.request(
@@ -17,16 +13,7 @@ export async function ChatMessageListContainer() {
   );
 
   const messages = mapGraphQLMessagesToChatMessages(messagesByRoomDocument);
+  const pageInfo = messagesByRoomDocument.messagesConnectionByRoom?.pageInfo;
 
-  const messageConnectionPageInfoFragment = useFragment(
-    MessageConnectionPageInfoFragmentFragmentDoc,
-    messagesByRoomDocument.messagesConnectionByRoom
-  );
-
-  return (
-    <ChatMessageList
-      messages={messages}
-      connection={messageConnectionPageInfoFragment}
-    />
-  );
+  return <ChatMessageList messages={messages} pageInfo={pageInfo} />;
 }

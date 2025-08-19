@@ -6,7 +6,6 @@ import {
   MessageAddedSubscription,
   MessageItemFragmentFragmentDoc,
 } from "@/gql/graphql";
-import { useFragment } from "@/gql";
 import { mapGraphQLMessageToChatMessage } from "../lib/message-mapper";
 
 /**
@@ -24,11 +23,7 @@ export function useRealtimeMessages(messages: ChatMessageItemProps[]) {
       if (!newMessage?.messageAdded)
         return prev ?? ({} as MessageAddedSubscription);
 
-      const messageItemFragment = useFragment(
-        MessageItemFragmentFragmentDoc,
-        newMessage.messageAdded
-      );
-      const message = mapGraphQLMessageToChatMessage(messageItemFragment);
+      const message = mapGraphQLMessageToChatMessage(newMessage.messageAdded);
 
       setAllMessages((old) =>
         old.some((m) => m.id === message.id) ? old : [...old, message]

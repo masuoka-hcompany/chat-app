@@ -3,26 +3,18 @@
 import { useState } from "react";
 import { useClient } from "urql";
 import { ChatMessageItem, ChatMessageItemProps } from "./chat-message-item";
-import {
-  MessageConnectionPageInfoFragmentFragment,
-  MessageConnectionPageInfoFragmentFragmentDoc,
-  MessagesByRoomDocument,
-} from "@/gql/graphql";
-import { useFragment } from "@/gql";
+import { MessagesByRoomDocument, PageInfo } from "@/gql/graphql";
 import { mapGraphQLMessagesToChatMessages } from "../lib/message-mapper";
 import { useRealtimeMessages } from "../hooks/use-realtime-messages";
 
 type ChatMessageListProps = {
   messages: ChatMessageItemProps[];
-  connection: MessageConnectionPageInfoFragmentFragment;
+  pageInfo: PageInfo;
 };
 
-export function ChatMessageList({
-  messages,
-  connection,
-}: ChatMessageListProps) {
+export function ChatMessageList({ messages, pageInfo }: ChatMessageListProps) {
   const [allMessages, setAllMessages] = useRealtimeMessages(messages);
-  const [hasMore, setHasMore] = useState(connection.pageInfo.hasPreviousPage);
+  const [hasMore, setHasMore] = useState(pageInfo.hasPreviousPage);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const client = useClient();
 
@@ -43,13 +35,8 @@ export function ChatMessageList({
       const newMessages = mapGraphQLMessagesToChatMessages(result.data);
       setAllMessages((prev) => [...newMessages, ...prev]);
 
-      const messageConnectionPageInfoFragment = useFragment(
-        MessageConnectionPageInfoFragmentFragmentDoc,
-        result.data?.messagesConnectionByRoom
-      );
-      setHasMore(
-        messageConnectionPageInfoFragment.pageInfo.hasPreviousPage ?? false
-      );
+      const pageInfo = result.data?.messagesConnectionByRoom?.pageInfo;
+      setHasMore(pageInfo.hasPreviousPage ?? false);
     }
     setIsLoadingMore(false);
   };
