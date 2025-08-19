@@ -24,6 +24,23 @@ async function main() {
       profile: {
         create: {
           name: '益岡 一樹',
+          profileImageUrl: 'https://ui.shadcn.com/avatars/02.png',
+        },
+      },
+    },
+  });
+
+  const user2 = await prisma.user.upsert({
+    where: { id: '387ce650-82ce-72d9-b504-ebc1ecf22123' },
+    update: {},
+    create: {
+      id: '387ce650-82ce-72d9-b504-ebc1ecf22123',
+      email: 'test@h-company.co.jp',
+      userStatusId: 'ACTIVE',
+      profile: {
+        create: {
+          name: '鈴木 慎吾',
+          profileImageUrl: 'https://ui.shadcn.com/avatars/03.png',
         },
       },
     },
@@ -47,7 +64,7 @@ async function main() {
     create: {
       id: '66a63ee8-1291-476f-ac22-843cfd5b21b4',
       roomId: '6508a8a7-2b77-49ee-947e-f01260a1e295',
-      senderId: 'b6e2b5e2-3c4a-4e1a-9c2a-123456789abc',
+      senderId: '387ce650-82ce-72d9-b504-ebc1ecf22123',
       contents: 'こんにちは',
     },
   });
@@ -58,7 +75,7 @@ async function main() {
       id: 'f7081712-83c6-4427-80c6-38e12f948273',
       roomId: '6508a8a7-2b77-49ee-947e-f01260a1e295',
       senderId: 'b6e2b5e2-3c4a-4e1a-9c2a-123456789abc',
-      contents: 'こんにちは2',
+      contents: '今日も暑いですね。',
     },
   });
   const message3 = await prisma.message.upsert({
@@ -67,12 +84,31 @@ async function main() {
     create: {
       id: 'ba9b861f-da47-4cd6-99df-9d9ece47fab9',
       roomId: '6508a8a7-2b77-49ee-947e-f01260a1e295',
+      senderId: '387ce650-82ce-72d9-b504-ebc1ecf22123',
+      contents: '明日も暑いです。',
+    },
+  });
+  const message4 = await prisma.message.upsert({
+    where: { id: '74e986ee-bde6-e60f-7eb7-444f5133c5eb' },
+    update: {},
+    create: {
+      id: '74e986ee-bde6-e60f-7eb7-444f5133c5eb',
+      roomId: '6508a8a7-2b77-49ee-947e-f01260a1e295',
       senderId: 'b6e2b5e2-3c4a-4e1a-9c2a-123456789abc',
-      contents: 'こんにちは3',
+      contents: 'そうですか。',
     },
   });
 
-  console.log({ statusActive, user, room, message1, message2, message3 });
+  console.log({
+    statusActive,
+    user,
+    user2,
+    room,
+    message1,
+    message2,
+    message3,
+    message4,
+  });
 }
 main()
   .then(async () => {

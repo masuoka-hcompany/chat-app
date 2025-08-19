@@ -1,0 +1,13 @@
+mutation CreateMessage($input: CreateMessageInput!) {
+  createMessage(input: $input) {
+    id
+    sender {
+      profile {
+        name
+      }
+    }
+    contents
+    createdAt
+    updatedAt
+  }
+}

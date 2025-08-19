@@ -1,0 +1,30 @@
+query MessagesByRoom(
+  $roomId: ID!
+  $first: Int
+  $last: Int
+  $after: String
+  $before: String
+) {
+  messagesConnectionByRoom(
+    roomId: $roomId
+    first: $first
+    last: $last
+    after: $after
+    before: $before
+  ) {
+    totalCount
+    edges {
+      cursor
+      node {
+        ...MessageItemFragment
+        createdAt
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+  }
+}

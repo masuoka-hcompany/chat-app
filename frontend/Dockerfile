@@ -28,4 +28,4 @@ COPY . .
 
 EXPOSE 3201
 
-CMD ["pnpm", "run", "dev"]
+# CMD ["pnpm", "run", "dev"]
