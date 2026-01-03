@@ -39,6 +39,30 @@
 
 ---
 
+### user_identities （ユーザー認証情報）
+
+| 論理名              | 項目名           | データ型     | PK  | NN  | 初期値 | 備考                      |
+| ------------------- | ---------------- | ------------ | --- | --- | ------ | ------------------------- |
+| ユーザー認証 ID     | id               | UUID         | ○   | ○   |        | UUID で自動採番           |
+| ユーザー ID         | user_id          | UUID         |     | ○   |        | 外部キー:users.id         |
+| 認証プロバイダー ID | auth_provider_id | VARCHAR(50)  |     | ○   |        | 外部キー:auth_provider.id |
+| プロバイダー提供 ID | provider_user_id | VARCHAR(255) |     | ○   |        |                           |
+| 登録日時            | created_at       | TIMESTAMP    |     | ○   | now()  |                           |
+| 更新日時            | updated_at       | TIMESTAMP    |     | ○   | now()  |                           |
+
+---
+
+### auth_providers （認証プロバイダー）
+
+| 論理名              | 項目名     | データ型     | PK  | NN  | 初期値 | 備考               |
+| ------------------- | ---------- | ------------ | --- | --- | ------ | ------------------ |
+| 認証プロバイダー ID | id         | VARCHAR(50)  | ○   | ○   |        | google,github など |
+| 認証プロバイダー名  | name       | VARCHAR(100) |     | ○   |        |                    |
+| 登録日時            | created_at | TIMESTAMP    |     | ○   | now()  |                    |
+| 更新日時            | updated_at | TIMESTAMP    |     | ○   | now()  |                    |
+
+---
+
 ### profiles （プロフィール）
 
 | 論理名           | 項目名            | データ型     | PK  | NN  | 初期値 | 備考              |
@@ -94,17 +118,27 @@
 ```mermaid
 erDiagram
   %% リレーション定義
+  users 1--1 profiles : ""
   users 1--0+ messages : ""
   users 1--0+ rooms : ""
+  users 1--0+ user_identities : ""
+  user_identities 0+--1 auth_providers : ""
   users 0+--1 user_statuses : ""
   messages 0+--1 rooms : ""
 
   users {
     UUID id PK
-    VARCHAR name
     VARCHAR email
     VARCHAR profile_image_url
     VARCHAR user_status_id FK
+    TIMESTAMP created_at
+    TIMESTAMP updated_at
+  }
+
+  profiles {
+    UUID user_id PK,FK
+    VARCHAR name
+    VARCHAR profile_image_url
     TIMESTAMP created_at
     TIMESTAMP updated_at
   }
@@ -114,6 +148,21 @@ erDiagram
     VARCHAR name
     TEXT description
     INTEGER sort_no
+    TIMESTAMP created_at
+    TIMESTAMP updated_at
+  }
+
+  user_identities {
+    UUID id PK
+    UUID user_id FK
+    VARCHAR auth_provider_id FK
+    TIMESTAMP created_at
+    TIMESTAMP updated_at
+  }
+
+  auth_providers {
+    VARCHAR id PK
+    VARCHAR name
     TIMESTAMP created_at
     TIMESTAMP updated_at
   }
