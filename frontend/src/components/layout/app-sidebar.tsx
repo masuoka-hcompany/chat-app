@@ -18,6 +18,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import SignIn from "@/app/components/sign-in";
 
 // This is sample data.
 const data = {
@@ -45,6 +46,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <span className="text-base font-semibold">chat-app</span>
         </span>
       </SidebarHeader>
+      <SignIn />
       <SidebarContent className="gap-0">
         {/* We create a collapsible SidebarGroup for each parent. */}
         {data.navMain.map((item) => (
