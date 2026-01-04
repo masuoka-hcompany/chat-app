@@ -21,5 +21,7 @@
   // ファイルを保存する際に実行するコードアクションを設定します。
   // "source.fixAll.eslint" を指定することで、ESLint が検出した自動修正可能な問題をすべて修正します。
   // これにより、Lint エラーを手動で直す手間が省け、コード品質と開発効率が向上します。
-  "editor.codeActionsOnSave": ["source.fixAll.eslint"]
+  "editor.codeActionsOnSave": ["source.fixAll.eslint"],
+
+  "prisma.pinToPrisma6": true
 }
