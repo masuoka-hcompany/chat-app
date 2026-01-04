@@ -39,16 +39,16 @@
 
 ---
 
-### user_identities （ユーザー認証情報）
+### accounts （ユーザー認証情報）
 
-| 論理名              | 項目名           | データ型     | PK  | NN  | 初期値 | 備考                      |
-| ------------------- | ---------------- | ------------ | --- | --- | ------ | ------------------------- |
-| ユーザー認証 ID     | id               | UUID         | ○   | ○   |        | UUID で自動採番           |
-| ユーザー ID         | user_id          | UUID         |     | ○   |        | 外部キー:users.id         |
-| 認証プロバイダー ID | auth_provider_id | VARCHAR(50)  |     | ○   |        | 外部キー:auth_provider.id |
-| プロバイダー提供 ID | provider_user_id | VARCHAR(255) |     | ○   |        |                           |
-| 登録日時            | created_at       | TIMESTAMP    |     | ○   | now()  |                           |
-| 更新日時            | updated_at       | TIMESTAMP    |     | ○   | now()  |                           |
+| 論理名              | 項目名              | データ型     | PK  | NN  | 初期値 | 備考                      |
+| ------------------- | ------------------- | ------------ | --- | --- | ------ | ------------------------- |
+| ユーザー認証 ID     | id                  | UUID         | ○   | ○   |        | UUID で自動採番           |
+| ユーザー ID         | user_id             | UUID         |     | ○   |        | 外部キー:users.id         |
+| 認証プロバイダー ID | auth_provider_id    | VARCHAR(50)  |     | ○   |        | 外部キー:auth_provider.id |
+| プロバイダー提供 ID | provider_account_id | VARCHAR(255) |     | ○   |        |                           |
+| 登録日時            | created_at          | TIMESTAMP    |     | ○   | now()  |                           |
+| 更新日時            | updated_at          | TIMESTAMP    |     | ○   | now()  |                           |
 
 ---
 
@@ -121,8 +121,8 @@ erDiagram
   users 1--1 profiles : ""
   users 1--0+ messages : ""
   users 1--0+ rooms : ""
-  users 1--0+ user_identities : ""
-  user_identities 0+--1 auth_providers : ""
+  users 1--0+ accounts : ""
+  accounts 0+--1 auth_providers : ""
   users 0+--1 user_statuses : ""
   messages 0+--1 rooms : ""
 
@@ -152,10 +152,11 @@ erDiagram
     TIMESTAMP updated_at
   }
 
-  user_identities {
+  accounts {
     UUID id PK
     UUID user_id FK
     VARCHAR auth_provider_id FK
+    VARCHAR provider_account_id FK
     TIMESTAMP created_at
     TIMESTAMP updated_at
   }
