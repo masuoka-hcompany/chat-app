@@ -50,6 +50,7 @@ export class UserPrismaRepository implements IUserRepository {
 
   async createWithAccount(data: {
     email: string;
+    name: string;
     image?: string;
     provider: string;
     providerAccountId: string;
@@ -58,6 +59,12 @@ export class UserPrismaRepository implements IUserRepository {
       data: {
         email: data.email,
         userStatusId: 'ACTIVE',
+        profile: {
+          create: {
+            name: data.name,
+            profileImageUrl: data.image,
+          },
+        },
         accounts: {
           create: {
             authProviderId: data.provider,

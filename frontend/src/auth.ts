@@ -43,7 +43,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           Authorization: `Bearer ${process.env.AUTH_SYNC_SECRET}`,
         },
         body: JSON.stringify({
+          name: user.name,
           email: user.email,
+          image: user.image,
           provider: account.provider,
           providerAccountId: account.providerAccountId,
         }),
