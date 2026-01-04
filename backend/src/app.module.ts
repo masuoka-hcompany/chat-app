@@ -8,6 +8,7 @@ import { RoomModule } from './modules/room/room.module';
 import { UserModule } from './modules/user/user.module';
 import { MessageModule } from './modules/message/message.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AuthModule } from './modules/auth/auth.module';
         'graphql-ws': true,
       },
     }),
+    ConfigModule.forRoot(),
     PrismaModule,
     PubSubModule,
     RoomModule,
