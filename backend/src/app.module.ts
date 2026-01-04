@@ -7,6 +7,7 @@ import { PubSubModule } from './shared/pubsub/pubsub.module';
 import { RoomModule } from './modules/room/room.module';
 import { UserModule } from './modules/user/user.module';
 import { MessageModule } from './modules/message/message.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { MessageModule } from './modules/message/message.module';
     RoomModule,
     UserModule,
     MessageModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

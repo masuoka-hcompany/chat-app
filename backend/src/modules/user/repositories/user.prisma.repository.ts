@@ -48,7 +48,7 @@ export class UserPrismaRepository implements IUserRepository {
     });
   }
 
-  async createUserWithAccount(data: {
+  async createWithAccount(data: {
     email: string;
     image?: string;
     provider: string;

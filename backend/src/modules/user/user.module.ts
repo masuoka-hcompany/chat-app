@@ -13,6 +13,6 @@ import { UserPrismaRepository } from './repositories/user.prisma.repository';
       useClass: UserPrismaRepository,
     },
   ],
-  exports: [GetUserUseCase],
+  exports: [GetUserUseCase, IUserRepositoryToken],
 })
 export class UserModule {}
