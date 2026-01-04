@@ -29,6 +29,7 @@ model User {
   createdRooms Room[]     @relation("CreatedRooms")
   updatedRooms Room[]     @relation("UpdatedRooms")
   messages     Message[]
+  accounts     Account[]
 
   @@index([email], name: "idx_users_email")
   @@map("users")
@@ -86,4 +87,29 @@ model Message {
   @@index([roomId], name: "idx_messages_room_id")
   @@index([roomId, createdAt], name: "idx_messages_room_id_created_at")
   @@map("messages")
+}
+
+model Account {
+  id                String   @id @default(uuid()) @db.Uuid
+  userId            String   @map("user_id") @db.Uuid
+  authProviderId    String   @map("auth_provider_id") @db.VarChar(50)
+  providerAccountId String   @map("provider_account_id") @db.VarChar(255)
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @default(now()) @updatedAt @map("updated_at")
+
+  user         User         @relation(fields: [userId], references: [id])
+  authProvider AuthProvider @relation(fields: [authProviderId], references: [id])
+
+  @@unique([authProviderId, providerAccountId])
+  @@map("accounts")
+}
+
+model AuthProvider {
+  id        String    @id @db.VarChar(50)
+  name      String    @db.VarChar(100)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
+  accounts  Account[]
+
+  @@map("auth_providers")
 }
