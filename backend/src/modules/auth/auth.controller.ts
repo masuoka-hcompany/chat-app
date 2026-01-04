@@ -10,12 +10,6 @@ export class AuthController {
   @Post('sync')
   @UseGuards(AuthSyncGuard)
   async sync(@Body() dto: SyncUserDto) {
-    const user = await this.authSyncUseCase.execute(dto);
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.profile?.name,
-      image: user.profile?.profileImageUrl,
-    };
+    return await this.authSyncUseCase.execute(dto);
   }
 }

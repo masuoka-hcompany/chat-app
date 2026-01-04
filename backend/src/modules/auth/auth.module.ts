@@ -3,10 +3,23 @@ import { IUserRepositoryToken } from '../user/repositories/interfaces/interface.
 import { UserPrismaRepository } from '../user/repositories/user.prisma.repository';
 import { AuthController } from './auth.controller';
 import { AuthSyncUseCase } from './usecases/auth-sync.usecase';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [ConfigModule],
+  imports: [
+    ConfigModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: config.get<string>('AUTH_SYNC_SECRET'),
+        signOptions: {
+          expiresIn: '30d',
+        },
+      }),
+    }),
+  ],
   providers: [
     AuthSyncUseCase,
     {
