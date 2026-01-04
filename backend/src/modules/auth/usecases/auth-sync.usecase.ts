@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { SyncUserDto } from '../dto/sync-user.dto';
+import { SyncUserDto } from '../dtos/sync-user.dto';
 import {
   IUserRepository,
   IUserRepositoryToken,
@@ -16,9 +16,7 @@ export class AuthSyncUseCase {
 
   async execute(dto: SyncUserDto) {
     const user = await this.resolveUser(dto);
-    console.log('Synchronized user:', user);
     const accessToken = this.generateToken(user);
-    console.log('Generated access token for user:', accessToken);
 
     return {
       user: {

@@ -1,6 +1,6 @@
 "use server";
 
-import { graphqlRequestClient } from "@/lib/graphql-request/client";
+import { getGraphqlClient } from "@/lib/graphql-request/client";
 import { CreateMessageDocument } from "@/gql/graphql";
 import { getLoggedInUserId } from "../lib/get-logged-in-user-id";
 
@@ -8,7 +8,8 @@ export async function sendMessageAction(
   message: string
 ): Promise<{ ok: boolean; message?: string; error?: string }> {
   try {
-    await graphqlRequestClient.request(CreateMessageDocument, {
+    const client = await getGraphqlClient();
+    await client.request(CreateMessageDocument, {
       input: {
         contents: message,
         roomId: "6508a8a7-2b77-49ee-947e-f01260a1e295", // TODO: 仮実装なので、取り急ぎ決め打ちのIDを指定。後々動的に取得する。

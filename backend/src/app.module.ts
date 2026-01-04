@@ -9,6 +9,8 @@ import { UserModule } from './modules/user/user.module';
 import { MessageModule } from './modules/message/message.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthJsGuard } from './modules/auth/guards/auth-js.guard';
 
 @Module({
   imports: [
@@ -17,16 +19,45 @@ import { ConfigModule } from '@nestjs/config';
       graphiql: true,
       autoSchemaFile: join(process.cwd(), 'src/shared/graphql/schema.gql'),
       subscriptions: {
-        'graphql-ws': true,
+        'graphql-ws': {
+          onConnect: (context: any) => {
+            return { connectionParams: context.connectionParams };
+          },
+        },
+      },
+      context: (ctx) => {
+        const { req, res, extra, connectionParams } = ctx as any;
+
+        if (extra || connectionParams) {
+          const params =
+            extra?.connectionParams ||
+            connectionParams ||
+            extra?.request?.headers;
+
+          return {
+            connectionParams: params,
+            Authorization: params?.Authorization || params?.authorization,
+          };
+        }
+        return { req, res };
       },
     }),
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
     PrismaModule,
     PubSubModule,
     RoomModule,
     UserModule,
     MessageModule,
     AuthModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthJsGuard,
+    },
   ],
 })
 export class AppModule {}

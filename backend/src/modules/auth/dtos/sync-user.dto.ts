@@ -5,7 +5,7 @@ import {
   IsString,
   IsUrl,
 } from 'class-validator';
-import { AuthProvider } from '../enum/auth-provider.enum';
+import { AuthProvider } from '../enums/auth-provider.enum';
 
 export class SyncUserDto {
   @IsEmail({}, { message: '有効なメールアドレスを入力してください' })
