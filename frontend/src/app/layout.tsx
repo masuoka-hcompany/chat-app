@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/app-sidebar";
 import { UrqlClientProvider } from "@/components/provider/urql-client-provider";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
@@ -24,7 +22,9 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: {
+  children: React.ReactNode;
+}) {
   const session = await auth();
   return (
     <html lang="ja">
@@ -32,12 +32,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} overflow-visible`}
       >
         <UrqlClientProvider>
-          <SessionProvider session={session}>
-            <SidebarProvider>
-              <AppSidebar />
-              <SidebarInset>{children}</SidebarInset>
-            </SidebarProvider>
-          </SessionProvider>
+          <SessionProvider session={session}>{children}</SessionProvider>
         </UrqlClientProvider>
       </body>
     </html>
