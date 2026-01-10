@@ -5,7 +5,7 @@ import {
   cacheExchange,
   fetchExchange,
   subscriptionExchange,
-  mapExchange, // 追加
+  mapExchange,
 } from "urql";
 import { createClient as createWSClient } from "graphql-ws";
 import { getSession } from "next-auth/react";
