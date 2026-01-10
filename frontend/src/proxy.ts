@@ -6,14 +6,13 @@ export default auth((req) => {
 
   const isAuthPage = nextUrl.pathname.startsWith("/login");
   const isApiAuthRoute = nextUrl.pathname.startsWith("/api/auth");
-  const isPublicRoute = ["/", "/terms"].includes(nextUrl.pathname);
 
-  if (!isLoggedIn && !isAuthPage && !isApiAuthRoute && !isPublicRoute) {
+  if (!isLoggedIn && !isAuthPage && !isApiAuthRoute) {
     return Response.redirect(new URL("/login", nextUrl));
   }
 
   if (isLoggedIn && isAuthPage) {
-    return Response.redirect(new URL("/chat/1", nextUrl));
+    return Response.redirect(new URL("/", nextUrl));
   }
 
   return;
