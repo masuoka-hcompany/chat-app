@@ -1,5 +1,5 @@
 import { GraphQLClient } from "graphql-request";
-import { auth } from "@/auth"; // あなたの auth.ts のパスに合わせてください
+import { auth } from "@/auth";
 
 export const getGraphqlClient = async () => {
   const session = await auth();
