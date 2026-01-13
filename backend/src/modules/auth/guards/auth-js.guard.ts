@@ -29,8 +29,10 @@ export class AuthJsGuard implements CanActivate {
     const gqlCtx = ctx.getContext();
 
     const authHeader =
+      gqlCtx.req?.headers?.Authorization ||
       gqlCtx.req?.headers?.authorization ||
       gqlCtx.connectionParams?.Authorization ||
+      gqlCtx.connectionParams?.authorization ||
       gqlCtx.Authorization;
 
     if (!authHeader) {
