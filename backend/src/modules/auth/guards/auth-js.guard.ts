@@ -33,7 +33,8 @@ export class AuthJsGuard implements CanActivate {
       gqlCtx.req?.headers?.authorization ||
       gqlCtx.connectionParams?.Authorization ||
       gqlCtx.connectionParams?.authorization ||
-      gqlCtx.Authorization;
+      gqlCtx.Authorization ||
+      gqlCtx.authorization;
 
     if (!authHeader) {
       throw new UnauthorizedException('認証トークンが見つかりません');
