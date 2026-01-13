@@ -34,14 +34,22 @@ export const urqlClient = new Client({
         const session = await getSession();
         const token = session?.accessToken;
 
+        const rawFetchOptions = operation.context.fetchOptions;
+        const fetchOptions: RequestInit =
+          typeof rawFetchOptions === "function"
+            ? rawFetchOptions()
+            : (rawFetchOptions ?? {});
         return {
           ...operation,
           context: {
             ...operation.context,
             fetchOptions: {
-              ...(operation.context.fetchOptions as RequestInit),
+              ...fetchOptions,
               headers: {
-                ...(operation.context.fetchOptions as any)?.headers,
+                ...(typeof fetchOptions.headers === "object" &&
+                fetchOptions.headers !== null
+                  ? fetchOptions.headers
+                  : {}),
                 Authorization: token ? `Bearer ${token}` : "",
               },
             },
