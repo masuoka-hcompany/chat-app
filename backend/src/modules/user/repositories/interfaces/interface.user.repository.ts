@@ -9,6 +9,7 @@ export interface IUserRepository {
   ): Promise<User | null>;
   createWithAccount(data: {
     email: string;
+    name: string;
     image?: string;
     provider: string;
     providerAccountId: string;
