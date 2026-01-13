@@ -54,7 +54,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (!response.ok) return false;
 
       const { id, email, name, image } = await response.json();
-      Object.assign(user, { id, email, name, image });
+
+      user.id = id;
+      user.email = email;
+      user.name = name;
+      user.image = image;
 
       return true;
     },
