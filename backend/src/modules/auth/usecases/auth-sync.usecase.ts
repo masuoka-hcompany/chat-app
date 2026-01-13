@@ -4,6 +4,7 @@ import {
   IUserRepository,
   IUserRepositoryToken,
 } from 'src/modules/user/repositories/interfaces/interface.user.repository';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AuthSyncUseCase {
@@ -20,14 +21,42 @@ export class AuthSyncUseCase {
 
     const userByEmail = await this.userRepository.findByEmail(dto.email);
     if (userByEmail) {
-      await this.userRepository.addAccountToUser(
-        userByEmail.id,
-        dto.provider,
-        dto.providerAccountId,
-      );
+      try {
+        await this.userRepository.addAccountToUser(
+          userByEmail.id,
+          dto.provider,
+          dto.providerAccountId,
+        );
+      } catch (e) {
+        if (
+          e instanceof Prisma.PrismaClientKnownRequestError &&
+          e.code === 'P2002'
+        ) {
+          // すでに他プロセスでアカウントが追加された場合
+          return await this.userRepository.findByAccount(
+            dto.provider,
+            dto.providerAccountId,
+          );
+        }
+        throw e;
+      }
       return userByEmail;
     }
 
-    return await this.userRepository.createWithAccount(dto);
+    try {
+      return await this.userRepository.createWithAccount(dto);
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === 'P2002'
+      ) {
+        // すでに他プロセスでユーザー＋アカウントが作成された場合
+        return await this.userRepository.findByAccount(
+          dto.provider,
+          dto.providerAccountId,
+        );
+      }
+      throw e;
+    }
   }
 }
