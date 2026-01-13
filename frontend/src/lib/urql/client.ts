@@ -14,9 +14,9 @@ export function createUrqlClient(token?: string) {
     typeof window !== "undefined"
       ? createWSClient({
           url: process.env.NEXT_PUBLIC_WS_GRAPHQL_API_ENDPOINT!,
-          connectionParams: async () => ({
+          connectionParams: {
             Authorization: token ? `Bearer ${token}` : "",
-          }),
+          },
         })
       : null;
 
