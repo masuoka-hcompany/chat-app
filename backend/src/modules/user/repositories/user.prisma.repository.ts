@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { IUserRepository } from './interfaces/interface.user.repository';
 import { User } from '../graphql-types/objects/user.model';
+import { userIncludeWithProfileAndStatus } from './user.prisma.include';
 
 @Injectable()
 export class UserPrismaRepository implements IUserRepository {
@@ -12,10 +13,7 @@ export class UserPrismaRepository implements IUserRepository {
       where: {
         id,
       },
-      include: {
-        profile: true,
-        userStatus: true,
-      },
+      include: userIncludeWithProfileAndStatus,
     });
   }
 
@@ -25,10 +23,7 @@ export class UserPrismaRepository implements IUserRepository {
         email: email,
         userStatusId: 'ACTIVE',
       },
-      include: {
-        profile: true,
-        userStatus: true,
-      },
+      include: userIncludeWithProfileAndStatus,
     });
   }
 
@@ -45,6 +40,7 @@ export class UserPrismaRepository implements IUserRepository {
           },
         },
       },
+      include: userIncludeWithProfileAndStatus,
     });
   }
 
@@ -72,6 +68,7 @@ export class UserPrismaRepository implements IUserRepository {
           },
         },
       },
+      include: userIncludeWithProfileAndStatus,
     });
   }
 
@@ -90,6 +87,7 @@ export class UserPrismaRepository implements IUserRepository {
           },
         },
       },
+      include: userIncludeWithProfileAndStatus,
     });
   }
 }
