@@ -11,6 +11,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthJsGuard } from './modules/auth/guards/auth-js.guard';
+import { getAuthHeaderFromContext } from './shared/utils/auth-header.util';
 
 @Module({
   imports: [
@@ -26,20 +27,10 @@ import { AuthJsGuard } from './modules/auth/guards/auth-js.guard';
         },
       },
       context: (ctx) => {
-        const { req, res, extra, connectionParams } = ctx as any;
-
-        if (extra || connectionParams) {
-          const params =
-            extra?.connectionParams ||
-            connectionParams ||
-            extra?.request?.headers;
-
-          return {
-            connectionParams: params,
-            Authorization: params?.Authorization || params?.authorization,
-          };
-        }
-        return { req, res };
+        // HTTP/WS/extra すべてに対応した認証ヘッダー抽出
+        const { req, res } = ctx as any;
+        const Authorization = getAuthHeaderFromContext(ctx);
+        return { req, res, Authorization };
       },
     }),
     ConfigModule.forRoot({
