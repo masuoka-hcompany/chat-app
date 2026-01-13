@@ -31,9 +31,9 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} overflow-visible`}
       >
-        <UrqlClientProvider>
-          <SessionProvider session={session}>{children}</SessionProvider>
-        </UrqlClientProvider>
+        <SessionProvider session={session}>
+          <UrqlClientProvider>{children}</UrqlClientProvider>
+        </SessionProvider>
       </body>
     </html>
   );
