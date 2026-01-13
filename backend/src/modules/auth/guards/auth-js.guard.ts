@@ -62,8 +62,14 @@ export class AuthJsGuard implements CanActivate {
       gqlCtx.user = payload;
 
       return true;
-    } catch (error) {
-      console.error('[AuthJsGuard] JWT Verification failed:', error.message);
+    } catch (error: unknown) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      console.error('[AuthJsGuard] JWT Verification failed:', {
+        name: err.name,
+        message: err.message,
+        stack: err.stack,
+        originalError: error,
+      });
       throw new UnauthorizedException('有効なセッションではありません');
     }
   }
