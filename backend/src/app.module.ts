@@ -7,6 +7,11 @@ import { PubSubModule } from './shared/pubsub/pubsub.module';
 import { RoomModule } from './modules/room/room.module';
 import { UserModule } from './modules/user/user.module';
 import { MessageModule } from './modules/message/message.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthJsGuard } from './modules/auth/guards/auth-js.guard';
+import { getAuthHeaderFromContext } from './shared/utils/auth-header.util';
 
 @Module({
   imports: [
@@ -15,14 +20,35 @@ import { MessageModule } from './modules/message/message.module';
       graphiql: true,
       autoSchemaFile: join(process.cwd(), 'src/shared/graphql/schema.gql'),
       subscriptions: {
-        'graphql-ws': true,
+        'graphql-ws': {
+          onConnect: (context: any) => {
+            return { connectionParams: context.connectionParams };
+          },
+        },
       },
+      context: (ctx) => {
+        // HTTP/WS/extra すべてに対応した認証ヘッダー抽出
+        const { req, res } = ctx as any;
+        const Authorization = getAuthHeaderFromContext(ctx);
+        return { req, res, Authorization };
+      },
+    }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
     }),
     PrismaModule,
     PubSubModule,
     RoomModule,
     UserModule,
     MessageModule,
+    AuthModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthJsGuard,
+    },
   ],
 })
 export class AppModule {}

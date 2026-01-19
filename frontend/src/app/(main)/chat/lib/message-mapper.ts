@@ -3,21 +3,21 @@ import {
   MessagesByRoomQuery,
 } from "@/gql/graphql";
 import { ChatMessageItemProps } from "../components/chat-message-item";
-import { getLoggedInUserId } from "./get-logged-in-user-id";
 
 export function mapGraphQLMessagesToChatMessages(
-  graphqlData: MessagesByRoomQuery
+  graphqlData: MessagesByRoomQuery,
+  currentUserId: string | null
 ): ChatMessageItemProps[] {
   return graphqlData.messagesConnectionByRoom.edges.map((edge) => {
-    return mapGraphQLMessageToChatMessage(edge.node);
+    return mapGraphQLMessageToChatMessage(edge.node, currentUserId);
   });
 }
 
 export function mapGraphQLMessageToChatMessage(
-  messageFragment: MessageItemFragmentFragment
+  messageFragment: MessageItemFragmentFragment,
+  currentUserId: string | null
 ): ChatMessageItemProps {
-  const isSentByCurrentUser =
-    messageFragment.sender?.id === getLoggedInUserId();
+  const isSentByCurrentUser = messageFragment.sender?.id === currentUserId;
   const senderName = messageFragment.sender?.profile?.name || "";
   const avatarFallback = senderName ? senderName.charAt(0).toUpperCase() : "";
 

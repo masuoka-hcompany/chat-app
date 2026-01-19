@@ -1,5 +1,6 @@
 import * as React from "react";
-import { ChevronRight, Box } from "lucide-react";
+import { ChevronRight, Box, LogOut } from "lucide-react"; // LogOutを追加
+import { signOut } from "@/auth"; // signOutをインポート
 
 import {
   Collapsible,
@@ -16,6 +17,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarFooter, // Footerを追加
   SidebarRail,
 } from "@/components/ui/sidebar";
 
@@ -45,6 +47,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <span className="text-base font-semibold">chat-app</span>
         </span>
       </SidebarHeader>
+
       <SidebarContent className="gap-0">
         {/* We create a collapsible SidebarGroup for each parent. */}
         {data.navMain.map((item) => (
@@ -67,10 +70,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <CollapsibleContent>
                 <SidebarGroupContent>
                   <SidebarMenu>
-                    {item.items.map((item) => (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton asChild isActive={item.isActive}>
-                          <a href={item.url}># {item.title}</a>
+                    {item.items.map((subItem) => (
+                      <SidebarMenuItem key={subItem.title}>
+                        <SidebarMenuButton asChild isActive={subItem.isActive}>
+                          <a href={subItem.url}># {subItem.title}</a>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     ))}
@@ -81,6 +84,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </Collapsible>
         ))}
       </SidebarContent>
+
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <form
+              action={async () => {
+                "use server";
+                await signOut({ redirectTo: "/login" });
+              }}
+            >
+              <SidebarMenuButton type="submit">
+                <LogOut />
+                <span>ログアウト</span>
+              </SidebarMenuButton>
+            </form>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );

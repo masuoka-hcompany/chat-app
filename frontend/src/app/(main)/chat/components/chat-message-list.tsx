@@ -6,6 +6,7 @@ import { ChatMessageItem, ChatMessageItemProps } from "./chat-message-item";
 import { MessagesByRoomDocument, PageInfo } from "@/gql/graphql";
 import { mapGraphQLMessagesToChatMessages } from "../lib/message-mapper";
 import { useRealtimeMessages } from "../hooks/use-realtime-messages";
+import { useLoggedInUserId } from "../hooks/use-logged-in-user-id";
 
 type ChatMessageListProps = {
   messages: ChatMessageItemProps[];
@@ -16,6 +17,8 @@ export function ChatMessageList({ messages, pageInfo }: ChatMessageListProps) {
   const [allMessages, setAllMessages] = useRealtimeMessages(messages);
   const [hasMore, setHasMore] = useState(pageInfo.hasPreviousPage);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const loggedInUserId = useLoggedInUserId();
+
   const client = useClient();
 
   const loadPreviousMessages = async () => {
@@ -32,7 +35,10 @@ export function ChatMessageList({ messages, pageInfo }: ChatMessageListProps) {
     await new Promise((resolve) => setTimeout(resolve, 200)); // 取得速度が早すぎるので、あえて少し遅延させる。
 
     if (result.data?.messagesConnectionByRoom?.edges) {
-      const newMessages = mapGraphQLMessagesToChatMessages(result.data);
+      const newMessages = mapGraphQLMessagesToChatMessages(
+        result.data,
+        loggedInUserId
+      );
       setAllMessages((prev) => [...newMessages, ...prev]);
 
       const pageInfo = result.data?.messagesConnectionByRoom?.pageInfo;

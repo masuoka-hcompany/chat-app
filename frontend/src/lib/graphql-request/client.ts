@@ -1,10 +1,13 @@
 import { GraphQLClient } from "graphql-request";
+import { auth } from "@/auth";
 
-export const graphqlRequestClient = new GraphQLClient(
-  process.env.GRAPHQL_API_ENDPOINT!,
-  {
+export const getGraphqlClient = async () => {
+  const session = await auth();
+  const token = session?.accessToken;
+
+  return new GraphQLClient(process.env.GRAPHQL_API_ENDPOINT!, {
     headers: {
-      Authorization: `Bearer ${process.env.GRAPHQL_API_TOKEN}`,
+      Authorization: token ? `Bearer ${token}` : "",
     },
-  }
-);
+  });
+};

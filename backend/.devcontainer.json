@@ -16,7 +16,10 @@
         "GitHub.copilot-chat"
       ],
       "settings": {
-        "prettier.prettierPath": "./node_modules/prettier"
+        "prettier.prettierPath": "./node_modules/prettier",
+        "[prisma]": {
+          "editor.defaultFormatter": "Prisma.prisma"
+        }
       }
     }
   },
