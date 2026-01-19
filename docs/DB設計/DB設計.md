@@ -2,13 +2,16 @@
 
 ## テーブル定義一覧
 
-| テーブル名    | 論理名             | 用途概要                                   |
-| ------------- | ------------------ | ------------------------------------------ |
-| users         | ユーザー           | ユーザー情報を管理                         |
-| profiles      | プロフィール       | ユーザーのプロフィール情報を管理           |
-| user_statuses | ユーザーステータス | ユーザーステータスのマスタ                 |
-| rooms         | チャットルーム     | チャットルームの情報を管理                 |
-| messages      | メッセージ         | チャットルームに投稿されたメッセージを管理 |
+| テーブル名     | 論理名             | 用途概要                                       |
+| -------------- | ------------------ | ---------------------------------------------- |
+| users          | ユーザー           | ユーザー情報を管理                             |
+| profiles       | プロフィール       | ユーザーのプロフィール情報を管理               |
+| user_statuses  | ユーザーステータス | ユーザーステータスのマスタ                     |
+| accounts       | ユーザー認証情報   | ユーザーの認証情報を管理                       |
+| auth_providers | 認証プロバイダ     | 認証用のプロバイダのマスタ                     |
+| rooms          | チャットルーム     | チャットルームの情報を管理                     |
+| room_members   | ルームメンバー     | チャットルームに所属しているユーザー情報を管理 |
+| messages       | メッセージ         | チャットルームに投稿されたメッセージを管理     |
 
 ---
 
@@ -89,6 +92,18 @@
 
 ---
 
+### room_members （ルームメンバー）
+
+| 論理名            | 項目名     | データ型  | PK  | NN  | 初期値 | 備考                                                                  |
+| ----------------- | ---------- | --------- | --- | --- | ------ | --------------------------------------------------------------------- |
+| ID                | id         | UUID      | ○   | ○   |        | UUID で自動採番                                                       |
+| チャットルーム ID | room_id    | UUID      |     | ○   |        | 外部キー: rooms.id / 複合ユニークインデックス (room_id, user_id)      |
+| ユーザー ID       | user_id    | UUID      |     | ○   |        | 外部キー: users.id / 複合ユニークインデックス (room_id, user_id)      |
+| 招待ユーザー ID   | invited_by | UUID      |     |     |        | 外部キー: users.id / NULLの場合は「自主参加」、値がある場合は「招待」 |
+| 参加日時          | joined_at  | TIMESTAMP |     | ○   | now()  |                                                                       |
+
+---
+
 ### messages （メッセージ）
 
 | 論理名            | 項目名     | データ型  | PK  | NN  | 初期値 | 備考              |
@@ -105,11 +120,16 @@
 
 ## インデックス・制約一覧
 
-| テーブル名 | インデックス名                  | カラム                | 種別  | 備考                                             |
-| ---------- | ------------------------------- | --------------------- | ----- | ------------------------------------------------ |
-| users      | idx_users_email                 | email                 | INDEX | メールアドレスでのユーザー特定の効率化用         |
-| messages   | idx_messages_room_id            | room_id               | INDEX | チャットルームのメッセージの絞り込み効率化用     |
-| messages   | idx_messages_room_id_created_at | (room_id, created_at) | INDEX | チャットルームごとのメッセージ一覧取得の効率化用 |
+| テーブル名   | インデックス名                  | カラム                | 種別   | 備考                                                                 |
+| ------------ | ------------------------------- | --------------------- | ------ | -------------------------------------------------------------------- |
+| users        | idx_users_email                 | email                 | INDEX  | メールアドレスでのユーザー特定の効率化用                             |
+| messages     | idx_messages_room_id            | room_id               | INDEX  | チャットルームのメッセージの絞り込み効率化用                         |
+| messages     | idx_messages_room_id_created_at | (room_id, created_at) | INDEX  | チャットルームごとのメッセージ一覧取得の効率化用                     |
+| room_members | uq_room_members_user_room       | (user_id, room_id)    | UNIQUE | ユーザーの二重参加防止、およびユーザーの参加ルーム一覧取得の効率化用 |
+| room_members | idx_room_members_room_id        | room_id               | INDEX  | ルーム内の参加メンバー一覧取得の効率化用                             |
+
+**※補足:**  
+`uq_room_members_user_room` のカラム順序を `(user_id, room_id)` としているため、`user_id` を条件にした検索はこのインデックスでカバーされます。一方で `room_id` のみの検索にはこのインデックスが効かないため、別途 `idx_room_members_room_id` を定義しています。
 
 ---
 
@@ -125,6 +145,8 @@ erDiagram
   accounts 0+--1 auth_providers : ""
   users 0+--1 user_statuses : ""
   messages 0+--1 rooms : ""
+  rooms 1--0+ room_members : ""
+  users 1--0+ room_members : ""
 
   users {
     UUID id PK
@@ -176,6 +198,14 @@ erDiagram
     UUID update_user_id FK
     TIMESTAMP created_at
     TIMESTAMP updated_at
+  }
+
+  room_members {
+    UUID id PK
+    UUID room_id FK
+    UUID user_id FK
+    UUID invited_by FK
+    TIMESTAMP joined_at
   }
 
   messages {
