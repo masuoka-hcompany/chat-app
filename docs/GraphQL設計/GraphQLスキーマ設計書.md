@@ -16,6 +16,7 @@ type Query {
     after: String
     last: Int
     before: String
+    filter: RoomFilterInput
   ): RoomConnection!
   messagesConnectionByRoom(
     roomId: ID!
@@ -40,13 +41,19 @@ before: 指定されたカーソルの「前」の要素から取得します。
 
 ## Mutation 一覧
 
-| Mutation 名   | 説明           |
-| ------------- | -------------- |
-| createMessage | メッセージ作成 |
-| deleteMessage | メッセージ削除 |
+| Mutation 名      | 説明                                 |
+| ---------------- | ------------------------------------ |
+| createRoom       | チャットルーム作成                   |
+| joinRoom         | チャットルームに参加する（自分）     |
+| inviteUserToRoom | チャットルームに他ユーザーを招待する |
+| createMessage    | メッセージ作成                       |
+| deleteMessage    | メッセージ削除                       |
 
 ```graphql
 type Mutation {
+  createRoom(input: CreateRoomInput!): Room!
+  joinRoom(input: JoinRoomInput!): Room!
+  inviteUserToRoom(input: InviteUserToRoomInput!): Room!
   createMessage(input: CreateMessageInput!): Message!
   deleteMessage(id: ID!): Boolean!
 }
@@ -68,19 +75,22 @@ type Subscription {
 
 ## 型定義
 
-| 種類  | 名称               | 内容                       |
-| ----- | ------------------ | -------------------------- |
-| type  | User               | ユーザー                   |
-| type  | UserStatus         | ユーザーステータス         |
-| type  | Profile            | ユーザープロフィール       |
-| type  | Room               | チャットルーム             |
-| type  | RoomConnection     | チャットルームコネクション |
-| type  | RoomEdge           | チャットルームエッジ       |
-| type  | Message            | メッセージ                 |
-| type  | MessageConnection  | メッセージコネクション     |
-| type  | MessageEdge        | メッセージエッジ           |
-| type  | PageInfo           | ページ情報                 |
-| input | CreateMessageInput | メッセージ作成             |
+| 種類  | 名称                  | 内容                       |
+| ----- | --------------------- | -------------------------- |
+| type  | User                  | ユーザー                   |
+| type  | UserStatus            | ユーザーステータス         |
+| type  | Profile               | ユーザープロフィール       |
+| type  | Room                  | チャットルーム             |
+| type  | RoomConnection        | チャットルームコネクション |
+| type  | RoomEdge              | チャットルームエッジ       |
+| type  | Message               | メッセージ                 |
+| type  | MessageConnection     | メッセージコネクション     |
+| type  | MessageEdge           | メッセージエッジ           |
+| type  | PageInfo              | ページ情報                 |
+| input | CreateMessageInput    | メッセージ作成用入力       |
+| input | CreateRoomInput       | ルーム作成用入力           |
+| input | JoinRoomInput         | ルーム参加用入力           |
+| input | InviteUserToRoomInput | ルーム招待用入力           |
 
 ```graphql
 type User {
@@ -178,6 +188,32 @@ input CreateMessageInput {
   roomId: ID! # チャットルーム ID
   senderId: ID! # 投稿ユーザー ID
   contents: String! # メッセージ内容
+}
+```
+
+```graphql
+input CreateRoomInput {
+  name: String! # チャットルーム名
+  description: String # 説明
+}
+```
+
+```graphql
+input JoinRoomInput {
+  roomId: ID! # 参加するチャットルーム ID
+}
+```
+
+```graphql
+input InviteUserToRoomInput {
+  roomId: ID! # 招待先のチャットルーム ID
+  userId: ID! # 招待するユーザー ID
+}
+```
+
+```graphql
+input RoomFilterInput {
+  joinedByMe: Boolean # ルーム参加状況による絞り込み
 }
 ```
 
