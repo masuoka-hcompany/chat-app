@@ -23,7 +23,7 @@
 | --------------------- | -------------- | ------------ | --- | --- | ------ | ------------------------- |
 | ユーザー ID           | id             | UUID         | ○   | ○   |        | UUID で自動採番           |
 | メールアドレス        | email          | VARCHAR(255) |     | ○   |        |                           |
-| ユーザーステータス ID | user_status_id | VARCHAR(50)  | ○   | ○   |        | 外部キー:user_statuses.id |
+| ユーザーステータス ID | user_status_id | VARCHAR(50)  |     | ○   |        | 外部キー:user_statuses.id |
 | 登録日時              | created_at     | TIMESTAMP    |     | ○   | now()  |                           |
 | 更新日時              | updated_at     | TIMESTAMP    |     | ○   | now()  |                           |
 
@@ -106,15 +106,42 @@
 
 ### messages （メッセージ）
 
-| 論理名            | 項目名     | データ型  | PK  | NN  | 初期値 | 備考              |
-| ----------------- | ---------- | --------- | --- | --- | ------ | ----------------- |
-| メッセージ ID     | id         | UUID      | ○   | ○   |        | UUID で自動採番   |
-| チャットルーム ID | room_id    | UUID      |     | ○   |        | 外部キー:rooms.id |
-| 投稿ユーザー ID   | sender_id  | UUID      |     | ○   |        | 外部キー:users.id |
-| メッセージ        | contents   | TEXT      |     | ○   |        |                   |
-| 登録日時          | created_at | TIMESTAMP |     | ○   | now()  |                   |
-| 更新日時          | updated_at | TIMESTAMP |     | ○   | now()  |                   |
-| 削除日時          | deleted_at | TIMESTAMP |     |     |        |                   |
+| 論理名              | 項目名          | データ型    | PK  | NN  | 初期値       | 備考                           |
+| ------------------- | --------------- | ----------- | --- | --- | ------------ | ------------------------------ |
+| メッセージ ID       | id              | UUID        | ○   | ○   |              | UUID で自動採番                |
+| チャットルーム ID   | room_id         | UUID        |     | ○   |              | 外部キー:rooms.id              |
+| 投稿ユーザー ID     | sender_id       | UUID        |     | ○   |              | 外部キー:users.id              |
+| メッセージ          | contents        | TEXT        |     | ○   |              |                                |
+| メッセージタイプ ID | message_type_id | VARCHAR(50) |     | ○   | USER_MESSAGE | 外部キー:message_types.id      |
+| メタデータ          | metadata        | JSONB       |     |     |              | システムメッセージ用の追加情報 |
+| 登録日時            | created_at      | TIMESTAMP   |     | ○   | now()        |                                |
+| 更新日時            | updated_at      | TIMESTAMP   |     | ○   | now()        |                                |
+| 削除日時            | deleted_at      | TIMESTAMP   |     |     |              |                                |
+
+---
+
+### message_types （メッセージタイプマスタ）
+
+| 論理名              | 項目名      | データ型     | PK  | NN  | 初期値 | 備考                                         |
+| ------------------- | ----------- | ------------ | --- | --- | ------ | -------------------------------------------- |
+| メッセージタイプ ID | id          | VARCHAR(50)  | ○   | ○   |        | USER_MESSAGE, SYSTEM_JOIN, SYSTEM_LEAVE など |
+| メッセージタイプ名  | name        | VARCHAR(100) |     | ○   |        |                                              |
+| 説明                | description | TEXT         |     |     |        |                                              |
+| 並び順              | sort_no     | INTEGER      |     | ○   | 0      |                                              |
+| 登録日時            | created_at  | TIMESTAMP    |     | ○   | now()  |                                              |
+| 更新日時            | updated_at  | TIMESTAMP    |     | ○   | now()  |                                              |
+
+**初期データ例:**
+
+```sql
+INSERT INTO message_types (id, name, sort_no) VALUES
+  ('USER_MESSAGE', 'ユーザーメッセージ', 1),
+  ('SYSTEM_JOIN', '参加通知', 2),
+  ('SYSTEM_LEAVE', '退出通知', 3),
+  ('SYSTEM_ROOM_CREATED', 'ルーム作成通知', 4),
+  ('SYSTEM_ROOM_RENAMED', 'ルーム名変更通知', 5),
+  ('SYSTEM_INVITE', '招待通知', 6);
+```
 
 ---
 
@@ -145,13 +172,13 @@ erDiagram
   accounts 0+--1 auth_providers : ""
   users 0+--1 user_statuses : ""
   messages 0+--1 rooms : ""
+  messages 0+--1 message_types : ""
   rooms 1--0+ room_members : ""
   users 1--0+ room_members : ""
 
   users {
     UUID id PK
     VARCHAR email
-    VARCHAR profile_image_url
     VARCHAR user_status_id FK
     TIMESTAMP created_at
     TIMESTAMP updated_at
@@ -211,17 +238,36 @@ erDiagram
   messages {
     UUID id PK
     UUID room_id FK
-    UUID user_id FK
+    UUID sender_id FK
     TEXT contents
+    VARCHAR message_type_id FK
+    JSONB metadata
+    TIMESTAMP created_at
+    TIMESTAMP updated_at
+    TIMESTAMP deleted_at
+  }
+
+  message_types {
+    VARCHAR id PK
+    VARCHAR name
+    TEXT description
+    INTEGER sort_no
     TIMESTAMP created_at
     TIMESTAMP updated_at
   }
-
 ```
 
 ---
 
 ## 補足事項
 
+### ユーザー管理
+
 - ユーザーの退会状態などはユーザーステータス ID で管理する。
 - 退会済みのユーザーでも再登録ができるようにするため、email にはユニーク制約はあえて付与していません。アプリ側で制御想定です。
+
+### メッセージタイプの活用
+
+- `message_type_id` により、通常のユーザーメッセージとシステムメッセージ（参加通知、退出通知など）を区別します。
+- システムメッセージの場合、`metadata` フィールドに追加情報（招待者の情報など）をJSON形式で保存できます。
+- 新しいメッセージタイプは `message_types` テーブルに追加することで、アプリケーションのデプロイなしで拡張可能です。
