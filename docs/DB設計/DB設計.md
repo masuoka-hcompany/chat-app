@@ -152,6 +152,7 @@ INSERT INTO message_types (id, name, sort_no) VALUES
 | users        | idx_users_email                 | email                 | INDEX  | メールアドレスでのユーザー特定の効率化用                             |
 | messages     | idx_messages_room_id            | room_id               | INDEX  | チャットルームのメッセージの絞り込み効率化用                         |
 | messages     | idx_messages_room_id_created_at | (room_id, created_at) | INDEX  | チャットルームごとのメッセージ一覧取得の効率化用                     |
+| messages     | idx_messages_message_type_id    | message_type_id       | INDEX  | メッセージタイプでの絞り込み効率化用                                 |
 | room_members | uq_room_members_user_room       | (user_id, room_id)    | UNIQUE | ユーザーの二重参加防止、およびユーザーの参加ルーム一覧取得の効率化用 |
 | room_members | idx_room_members_room_id        | room_id               | INDEX  | ルーム内の参加メンバー一覧取得の効率化用                             |
 
@@ -258,6 +259,20 @@ erDiagram
 ```
 
 ---
+
+## データ整合性ルール
+
+### メッセージ作成時のルール
+
+1. システムメッセージ（SYSTEM\_\*）は対応するMutationから自動生成される
+2. `createMessage` から直接システムメッセージを作成することはできない
+3. システムメッセージの `contents` は空文字列を許容する
+
+### ルームメンバー管理のルール
+
+1. 同一ユーザーは同一ルームに重複参加できない（UNIQUE制約）
+2. ルーム退出時は room_members レコードを物理削除する（または left_at で論理削除）
+3. ルーム作成者は自動的に room_members に追加される
 
 ## 補足事項
 

@@ -230,7 +230,6 @@ type PageInfo {
 ```graphql
 input CreateMessageInput {
   roomId: ID! # チャットルーム ID
-  senderId: ID! # 投稿ユーザー ID
   contents: String! # メッセージ内容
 }
 ```
