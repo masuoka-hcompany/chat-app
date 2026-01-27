@@ -2,15 +2,16 @@
 
 ## テーブル定義一覧
 
-| テーブル名     | 論理名             | 用途概要                                   |
-| -------------- | ------------------ | ------------------------------------------ |
-| users          | ユーザー           | ユーザー情報を管理                         |
-| profiles       | プロフィール       | ユーザーのプロフィール情報を管理           |
-| user_statuses  | ユーザーステータス | ユーザーステータスのマスタ                 |
-| accounts       | ユーザー認証情報   | ユーザーの認証情報を管理                   |
-| auth_providers | 認証プロバイダ     | 認証用のプロバイダのマスタ                 |
-| rooms          | チャットルーム     | チャットルームの情報を管理                 |
-| messages       | メッセージ         | チャットルームに投稿されたメッセージを管理 |
+| テーブル名     | 論理名             | 用途概要                                       |
+| -------------- | ------------------ | ---------------------------------------------- |
+| users          | ユーザー           | ユーザー情報を管理                             |
+| profiles       | プロフィール       | ユーザーのプロフィール情報を管理               |
+| user_statuses  | ユーザーステータス | ユーザーステータスのマスタ                     |
+| accounts       | ユーザー認証情報   | ユーザーの認証情報を管理                       |
+| auth_providers | 認証プロバイダ     | 認証用のプロバイダのマスタ                     |
+| rooms          | チャットルーム     | チャットルームの情報を管理                     |
+| room_members   | ルームメンバー     | チャットルームに所属しているユーザー情報を管理 |
+| messages       | メッセージ         | チャットルームに投稿されたメッセージを管理     |
 
 ---
 
@@ -22,7 +23,7 @@
 | --------------------- | -------------- | ------------ | --- | --- | ------ | ------------------------- |
 | ユーザー ID           | id             | UUID         | ○   | ○   |        | UUID で自動採番           |
 | メールアドレス        | email          | VARCHAR(255) |     | ○   |        |                           |
-| ユーザーステータス ID | user_status_id | VARCHAR(50)  | ○   | ○   |        | 外部キー:user_statuses.id |
+| ユーザーステータス ID | user_status_id | VARCHAR(50)  |     | ○   |        | 外部キー:user_statuses.id |
 | 登録日時              | created_at     | TIMESTAMP    |     | ○   | now()  |                           |
 | 更新日時              | updated_at     | TIMESTAMP    |     | ○   | now()  |                           |
 
@@ -91,27 +92,72 @@
 
 ---
 
+### room_members （ルームメンバー）
+
+| 論理名            | 項目名     | データ型  | PK  | NN  | 初期値 | 備考                                                                  |
+| ----------------- | ---------- | --------- | --- | --- | ------ | --------------------------------------------------------------------- |
+| ID                | id         | UUID      | ○   | ○   |        | UUID で自動採番                                                       |
+| チャットルーム ID | room_id    | UUID      |     | ○   |        | 外部キー: rooms.id / 複合ユニークインデックス (room_id, user_id)      |
+| ユーザー ID       | user_id    | UUID      |     | ○   |        | 外部キー: users.id / 複合ユニークインデックス (room_id, user_id)      |
+| 招待ユーザー ID   | invited_by | UUID      |     |     |        | 外部キー: users.id / NULLの場合は「自主参加」、値がある場合は「招待」 |
+| 参加日時          | joined_at  | TIMESTAMP |     | ○   | now()  |                                                                       |
+
+---
+
 ### messages （メッセージ）
 
-| 論理名            | 項目名     | データ型  | PK  | NN  | 初期値 | 備考              |
-| ----------------- | ---------- | --------- | --- | --- | ------ | ----------------- |
-| メッセージ ID     | id         | UUID      | ○   | ○   |        | UUID で自動採番   |
-| チャットルーム ID | room_id    | UUID      |     | ○   |        | 外部キー:rooms.id |
-| 投稿ユーザー ID   | sender_id  | UUID      |     | ○   |        | 外部キー:users.id |
-| メッセージ        | contents   | TEXT      |     | ○   |        |                   |
-| 登録日時          | created_at | TIMESTAMP |     | ○   | now()  |                   |
-| 更新日時          | updated_at | TIMESTAMP |     | ○   | now()  |                   |
-| 削除日時          | deleted_at | TIMESTAMP |     |     |        |                   |
+| 論理名              | 項目名          | データ型    | PK  | NN  | 初期値       | 備考                           |
+| ------------------- | --------------- | ----------- | --- | --- | ------------ | ------------------------------ |
+| メッセージ ID       | id              | UUID        | ○   | ○   |              | UUID で自動採番                |
+| チャットルーム ID   | room_id         | UUID        |     | ○   |              | 外部キー:rooms.id              |
+| 投稿ユーザー ID     | sender_id       | UUID        |     | ○   |              | 外部キー:users.id              |
+| メッセージ          | contents        | TEXT        |     | ○   |              |                                |
+| メッセージタイプ ID | message_type_id | VARCHAR(50) |     | ○   | USER_MESSAGE | 外部キー:message_types.id      |
+| メタデータ          | metadata        | JSONB       |     |     |              | システムメッセージ用の追加情報 |
+| 登録日時            | created_at      | TIMESTAMP   |     | ○   | now()        |                                |
+| 更新日時            | updated_at      | TIMESTAMP   |     | ○   | now()        |                                |
+| 削除日時            | deleted_at      | TIMESTAMP   |     |     |              |                                |
+
+---
+
+### message_types （メッセージタイプマスタ）
+
+| 論理名              | 項目名      | データ型     | PK  | NN  | 初期値 | 備考                                         |
+| ------------------- | ----------- | ------------ | --- | --- | ------ | -------------------------------------------- |
+| メッセージタイプ ID | id          | VARCHAR(50)  | ○   | ○   |        | USER_MESSAGE, SYSTEM_JOIN, SYSTEM_LEAVE など |
+| メッセージタイプ名  | name        | VARCHAR(100) |     | ○   |        |                                              |
+| 説明                | description | TEXT         |     |     |        |                                              |
+| 並び順              | sort_no     | INTEGER      |     | ○   | 0      |                                              |
+| 登録日時            | created_at  | TIMESTAMP    |     | ○   | now()  |                                              |
+| 更新日時            | updated_at  | TIMESTAMP    |     | ○   | now()  |                                              |
+
+**初期データ例:**
+
+```sql
+INSERT INTO message_types (id, name, sort_no) VALUES
+  ('USER_MESSAGE', 'ユーザーメッセージ', 1),
+  ('SYSTEM_JOIN', '参加通知', 2),
+  ('SYSTEM_LEAVE', '退出通知', 3),
+  ('SYSTEM_ROOM_CREATED', 'ルーム作成通知', 4),
+  ('SYSTEM_ROOM_RENAMED', 'ルーム名変更通知', 5),
+  ('SYSTEM_INVITE', '招待通知', 6);
+```
 
 ---
 
 ## インデックス・制約一覧
 
-| テーブル名 | インデックス名                  | カラム                | 種別  | 備考                                             |
-| ---------- | ------------------------------- | --------------------- | ----- | ------------------------------------------------ |
-| users      | idx_users_email                 | email                 | INDEX | メールアドレスでのユーザー特定の効率化用         |
-| messages   | idx_messages_room_id            | room_id               | INDEX | チャットルームのメッセージの絞り込み効率化用     |
-| messages   | idx_messages_room_id_created_at | (room_id, created_at) | INDEX | チャットルームごとのメッセージ一覧取得の効率化用 |
+| テーブル名   | インデックス名                  | カラム                | 種別   | 備考                                                                 |
+| ------------ | ------------------------------- | --------------------- | ------ | -------------------------------------------------------------------- |
+| users        | idx_users_email                 | email                 | INDEX  | メールアドレスでのユーザー特定の効率化用                             |
+| messages     | idx_messages_room_id            | room_id               | INDEX  | チャットルームのメッセージの絞り込み効率化用                         |
+| messages     | idx_messages_room_id_created_at | (room_id, created_at) | INDEX  | チャットルームごとのメッセージ一覧取得の効率化用                     |
+| messages     | idx_messages_message_type_id    | message_type_id       | INDEX  | メッセージタイプでの絞り込み効率化用                                 |
+| room_members | uq_room_members_user_room       | (user_id, room_id)    | UNIQUE | ユーザーの二重参加防止、およびユーザーの参加ルーム一覧取得の効率化用 |
+| room_members | idx_room_members_room_id        | room_id               | INDEX  | ルーム内の参加メンバー一覧取得の効率化用                             |
+
+**※補足:**  
+`uq_room_members_user_room` のカラム順序を `(user_id, room_id)` としているため、`user_id` を条件にした検索はこのインデックスでカバーされます。一方で `room_id` のみの検索にはこのインデックスが効かないため、別途 `idx_room_members_room_id` を定義しています。
 
 ---
 
@@ -127,11 +173,13 @@ erDiagram
   accounts 0+--1 auth_providers : ""
   users 0+--1 user_statuses : ""
   messages 0+--1 rooms : ""
+  messages 0+--1 message_types : ""
+  rooms 1--0+ room_members : ""
+  users 1--0+ room_members : ""
 
   users {
     UUID id PK
     VARCHAR email
-    VARCHAR profile_image_url
     VARCHAR user_status_id FK
     TIMESTAMP created_at
     TIMESTAMP updated_at
@@ -180,20 +228,61 @@ erDiagram
     TIMESTAMP updated_at
   }
 
-  messages {
+  room_members {
     UUID id PK
     UUID room_id FK
     UUID user_id FK
+    UUID invited_by FK
+    TIMESTAMP joined_at
+  }
+
+  messages {
+    UUID id PK
+    UUID room_id FK
+    UUID sender_id FK
     TEXT contents
+    VARCHAR message_type_id FK
+    JSONB metadata
+    TIMESTAMP created_at
+    TIMESTAMP updated_at
+    TIMESTAMP deleted_at
+  }
+
+  message_types {
+    VARCHAR id PK
+    VARCHAR name
+    TEXT description
+    INTEGER sort_no
     TIMESTAMP created_at
     TIMESTAMP updated_at
   }
-
 ```
 
 ---
 
+## データ整合性ルール
+
+### メッセージ作成時のルール
+
+1. システムメッセージ（SYSTEM\_\*）は対応するMutationから自動生成される
+2. `createMessage` から直接システムメッセージを作成することはできない
+3. システムメッセージの `contents` は空文字列を許容する
+
+### ルームメンバー管理のルール
+
+1. 同一ユーザーは同一ルームに重複参加できない（UNIQUE制約）
+2. ルーム退出時は room_members レコードを物理削除する（または left_at で論理削除）
+3. ルーム作成者は自動的に room_members に追加される
+
 ## 補足事項
+
+### ユーザー管理
 
 - ユーザーの退会状態などはユーザーステータス ID で管理する。
 - 退会済みのユーザーでも再登録ができるようにするため、email にはユニーク制約はあえて付与していません。アプリ側で制御想定です。
+
+### メッセージタイプの活用
+
+- `message_type_id` により、通常のユーザーメッセージとシステムメッセージ（参加通知、退出通知など）を区別します。
+- システムメッセージの場合、`metadata` フィールドに追加情報（招待者の情報など）をJSON形式で保存できます。
+- 新しいメッセージタイプは `message_types` テーブルに追加することで、アプリケーションのデプロイなしで拡張可能です。
