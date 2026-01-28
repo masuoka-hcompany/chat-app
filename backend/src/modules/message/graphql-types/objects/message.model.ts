@@ -1,5 +1,7 @@
 import { Field, ObjectType, ID } from '@nestjs/graphql';
+import GraphQLJSON from 'graphql-type-json';
 import { User } from 'src/modules/user/graphql-types/objects/user.model';
+import { MessageType } from './message-type.model';
 
 @ObjectType()
 export class Message {
@@ -8,6 +10,18 @@ export class Message {
 
   @Field(() => User, { nullable: false, description: '投稿ユーザー' })
   sender?: User;
+
+  @Field(() => MessageType, {
+    nullable: false,
+    description: 'メッセージタイプ',
+  })
+  messageType?: MessageType;
+
+  @Field(() => GraphQLJSON, {
+    nullable: true,
+    description: 'メタデータ（システムメッセージ用の追加情報）',
+  })
+  metadata!: any | null;
 
   @Field(() => String, { nullable: false, description: 'メッセージ内容' })
   contents!: string;
