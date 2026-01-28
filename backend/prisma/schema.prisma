@@ -19,17 +19,19 @@ datasource db {
 }
 
 model User {
-  id           String     @id @default(uuid()) @map("id") @db.Uuid
-  email        String
-  userStatusId String     @map("user_status_id")
-  createdAt    DateTime   @default(now()) @map("created_at")
-  updatedAt    DateTime   @default(now()) @updatedAt @map("updated_at")
-  userStatus   UserStatus @relation(fields: [userStatusId], references: [id])
-  profile      Profile?
-  createdRooms Room[]     @relation("CreatedRooms")
-  updatedRooms Room[]     @relation("UpdatedRooms")
-  messages     Message[]
-  accounts     Account[]
+  id              String       @id @default(uuid()) @map("id") @db.Uuid
+  email           String
+  userStatusId    String       @map("user_status_id")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @default(now()) @updatedAt @map("updated_at")
+  userStatus      UserStatus   @relation(fields: [userStatusId], references: [id])
+  profile         Profile?
+  createdRooms    Room[]       @relation("CreatedRooms")
+  updatedRooms    Room[]       @relation("UpdatedRooms")
+  messages        Message[]
+  accounts        Account[]
+  roomMemberships RoomMember[] @relation("RoomMemberships")
+  roomInvitations RoomMember[] @relation("RoomInvitations")
 
   @@index([email], name: "idx_users_email")
   @@map("users")
@@ -59,34 +61,66 @@ model UserStatus {
 }
 
 model Room {
-  id           String    @id @default(uuid()) @map("id") @db.Uuid
-  name         String    @db.VarChar(100)
+  id           String       @id @default(uuid()) @map("id") @db.Uuid
+  name         String       @db.VarChar(100)
   description  String?
-  createUserId String    @map("create_user_id") @db.Uuid
-  updateUserId String    @map("update_user_id") @db.Uuid
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at")
-  creator      User      @relation("CreatedRooms", fields: [createUserId], references: [id])
-  updater      User      @relation("UpdatedRooms", fields: [updateUserId], references: [id])
+  createUserId String       @map("create_user_id") @db.Uuid
+  updateUserId String       @map("update_user_id") @db.Uuid
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @default(now()) @updatedAt @map("updated_at")
+  creator      User         @relation("CreatedRooms", fields: [createUserId], references: [id])
+  updater      User         @relation("UpdatedRooms", fields: [updateUserId], references: [id])
   messages     Message[]
+  roomMembers  RoomMember[]
 
   @@map("rooms")
 }
 
+model RoomMember {
+  id        String   @id @default(uuid()) @db.Uuid
+  roomId    String   @map("room_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  invitedBy String?  @map("invited_by") @db.Uuid
+  joinedAt  DateTime @default(now()) @map("joined_at")
+  room      Room     @relation(fields: [roomId], references: [id])
+  user      User     @relation("RoomMemberships", fields: [userId], references: [id])
+  inviter   User?    @relation("RoomInvitations", fields: [invitedBy], references: [id])
+
+  @@unique([roomId, userId], name: "uq_room_members_user_room")
+  @@index([roomId], name: "idx_room_members_room_id")
+  @@map("room_members")
+}
+
 model Message {
-  id        String    @id @default(uuid()) @map("id") @db.Uuid
-  roomId    String    @map("room_id") @db.Uuid
-  senderId  String    @map("sender_id") @db.Uuid
-  contents  String
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
-  room      Room      @relation(fields: [roomId], references: [id])
-  sender    User      @relation(fields: [senderId], references: [id])
+  id            String      @id @default(uuid()) @map("id") @db.Uuid
+  roomId        String      @map("room_id") @db.Uuid
+  senderId      String      @map("sender_id") @db.Uuid
+  contents      String
+  messageTypeId String      @default("USER_MESSAGE") @map("message_type_id") @db.VarChar(50)
+  metadata      Json?       @db.JsonB
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @default(now()) @updatedAt @map("updated_at")
+  deletedAt     DateTime?   @map("deleted_at")
+  room          Room        @relation(fields: [roomId], references: [id])
+  sender        User        @relation(fields: [senderId], references: [id])
+  messageType   MessageType @relation(fields: [messageTypeId], references: [id])
 
   @@index([roomId], name: "idx_messages_room_id")
   @@index([roomId, createdAt], name: "idx_messages_room_id_created_at")
+  @@index([messageTypeId], name: "idx_messages_message_type_id")
   @@map("messages")
+}
+
+model MessageType {
+  id          String    @id @db.VarChar(50)
+  name        String    @db.VarChar(100)
+  description String?
+  sortNo      Int       @default(0) @map("sort_no")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at")
+  messages    Message[]
+
+  @@map("message_types")
 }
 
 model Account {
