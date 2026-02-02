@@ -51,7 +51,7 @@ export class RoomResolver {
     @Args('input') input: CreateRoomInput,
     @CurrentUser() user: UserPayload,
   ) {
-    return this.createRoomUseCase.execute(input, user.id);
+    return this.createRoomUseCase.execute(input, user);
   }
 
   @Mutation(() => Room)
@@ -59,7 +59,7 @@ export class RoomResolver {
     @Args('input') input: JoinRoomInput,
     @CurrentUser() user: UserPayload,
   ) {
-    return this.joinRoomUseCase.execute(input, user.id);
+    return this.joinRoomUseCase.execute(input, user);
   }
 
   @Mutation(() => Room)
@@ -67,6 +67,6 @@ export class RoomResolver {
     @Args('input') input: InviteUserToRoomInput,
     @CurrentUser() user: UserPayload,
   ) {
-    return this.inviteUserToRoomUseCase.execute(input, user.id);
+    return this.inviteUserToRoomUseCase.execute(input, user);
   }
 }

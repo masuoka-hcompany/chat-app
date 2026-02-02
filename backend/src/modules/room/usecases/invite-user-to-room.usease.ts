@@ -3,8 +3,10 @@ import {
   IRoomRepository,
   IRoomRepositoryToken,
 } from '../repositories/interfaces/interface.room.repository';
-import { RoomMember } from '@prisma/client';
 import { InviteUserToRoomInput } from '../graphql-types/inputs/invite-user-to-room.input';
+import { UserPayload } from 'src/modules/auth/types/user-payload';
+import { Room } from '../graphql-types/objects/room.model';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class InviteUserToRoomUseCase {
@@ -15,12 +17,25 @@ export class InviteUserToRoomUseCase {
 
   async execute(
     input: InviteUserToRoomInput,
-    userId: string,
-  ): Promise<RoomMember> {
-    return await this.roomRepository.createInvitation(
-      input.roomId,
-      input.userId,
-      userId,
-    );
+    user: UserPayload,
+  ): Promise<Room> {
+    try {
+      await this.roomRepository.createInvitation(
+        input.roomId,
+        input.userId,
+        user.sub,
+      );
+      return await this.roomRepository.findById(input.roomId);
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === 'P2002'
+      ) {
+        return await this.roomRepository.findById(input.roomId);
+      }
+      throw new Error(
+        `Failed to invite user to room: ${e instanceof Error ? e.message : String(e)}`,
+      );
+    }
   }
 }
