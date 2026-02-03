@@ -5,10 +5,20 @@ import {
   IMessageRepository,
 } from './interfaces/interface.message.repository';
 import { CreateMessageInput } from '../graphql-types/inputs/create-message.input';
-import { messageIncludeSenderWithProfile } from './message.prisma.include';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class MessagePrismaRepository implements IMessageRepository {
+  private readonly defaultInclude = Prisma.validator<Prisma.MessageInclude>()({
+    sender: {
+      include: {
+        userStatus: true,
+        profile: true,
+      },
+    },
+    messageType: true, // これを追加
+  });
+
   constructor(private readonly prisma: PrismaService) {}
 
   async create(input: CreateMessageInput) {
@@ -19,7 +29,7 @@ export class MessagePrismaRepository implements IMessageRepository {
         senderId,
         contents,
       },
-      include: messageIncludeSenderWithProfile,
+      include: this.defaultInclude,
     });
   }
 
@@ -43,7 +53,7 @@ export class MessagePrismaRepository implements IMessageRepository {
       skip: cursor ? 1 : 0,
       cursor: cursorObj,
       orderBy,
-      include: messageIncludeSenderWithProfile,
+      include: this.defaultInclude,
     });
 
     const hasExtra = messages.length > take;
