@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
   IRoomRepository,
   IRoomRepositoryToken,
@@ -19,23 +19,28 @@ export class InviteUserToRoomUseCase {
     input: InviteUserToRoomInput,
     user: UserPayload,
   ): Promise<Room> {
+    const room = await this.roomRepository.findById(input.roomId);
+    if (!room) {
+      throw new NotFoundException(`Room with id ${input.roomId} not found`);
+    }
+
     try {
       await this.roomRepository.createInvitation(
         input.roomId,
         input.userId,
         user.sub,
       );
-      return await this.roomRepository.findById(input.roomId);
     } catch (e) {
       if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === 'P2002'
+        !(
+          e instanceof Prisma.PrismaClientKnownRequestError &&
+          e.code === 'P2002'
+        )
       ) {
-        return await this.roomRepository.findById(input.roomId);
+        throw e;
       }
-      throw new Error(
-        `Failed to invite user to room: ${e instanceof Error ? e.message : String(e)}`,
-      );
     }
+
+    return await this.roomRepository.findById(input.roomId);
   }
 }

@@ -2,10 +2,15 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { IRoomRepository } from './interfaces/interface.room.repository';
 import { Room } from '../graphql-types/objects/room.model';
-import { RoomMember } from '@prisma/client';
+import { Prisma, RoomMember } from '@prisma/client';
 
 @Injectable()
 export class RoomPrismaRepository implements IRoomRepository {
+  private readonly defaultInclude = Prisma.validator<Prisma.RoomInclude>()({
+    creator: true,
+    updater: true,
+  });
+
   constructor(private readonly prisma: PrismaService) {}
 
   async findById(id: string): Promise<Room | null> {
@@ -13,6 +18,7 @@ export class RoomPrismaRepository implements IRoomRepository {
       where: {
         id,
       },
+      include: this.defaultInclude,
     });
   }
 
@@ -28,6 +34,7 @@ export class RoomPrismaRepository implements IRoomRepository {
         createUserId: userId,
         updateUserId: userId,
       },
+      include: this.defaultInclude,
     });
   }
 

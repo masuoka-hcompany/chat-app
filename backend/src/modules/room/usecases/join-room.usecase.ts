@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
   IRoomRepository,
   IRoomRepositoryToken,
@@ -16,19 +16,23 @@ export class JoinRoomUseCase {
   ) {}
 
   async execute(input: JoinRoomInput, user: UserPayload): Promise<Room> {
+    const room = await this.roomRepository.findById(input.roomId);
+    if (!room) {
+      throw new NotFoundException(`Room with id ${input.roomId} not found`);
+    }
+
     try {
       await this.roomRepository.addMember(input.roomId, user.sub);
-      return await this.roomRepository.findById(input.roomId);
     } catch (e) {
       if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === 'P2002'
+        !(
+          e instanceof Prisma.PrismaClientKnownRequestError &&
+          e.code === 'P2002'
+        )
       ) {
-        return await this.roomRepository.findById(input.roomId);
+        throw e;
       }
-      throw new Error(
-        `Failed to join room: ${e instanceof Error ? e.message : String(e)}`,
-      );
     }
+    return await this.roomRepository.findById(input.roomId);
   }
 }
