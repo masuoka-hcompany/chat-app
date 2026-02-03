@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { IRoomRepository } from './interfaces/interface.room.repository';
 import { Room } from '../graphql-types/objects/room.model';
@@ -49,7 +53,9 @@ export class RoomPrismaRepository implements IRoomRepository {
     } catch (error: unknown) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          // 重複は無視（冪等性）- 何もしない
+          throw new ConflictException(
+            'User has already been invited to this room',
+          );
         }
         if (error.code === 'P2003') {
           throw new NotFoundException('Room or User not found');
@@ -75,7 +81,9 @@ export class RoomPrismaRepository implements IRoomRepository {
     } catch (error: unknown) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          // 重複は無視（冪等性）- 何もしない
+          throw new ConflictException(
+            'User has already been invited to this room',
+          );
         }
         if (error.code === 'P2003') {
           throw new NotFoundException('Room or User not found');
