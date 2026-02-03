@@ -86,7 +86,7 @@ model RoomMember {
   user      User     @relation("RoomMemberships", fields: [userId], references: [id])
   inviter   User?    @relation("RoomInvitations", fields: [invitedBy], references: [id])
 
-  @@unique([roomId, userId], name: "uq_room_members_user_room")
+  @@unique([roomId, userId], name: "room_members_room_id_user_id_key")
   @@index([roomId], name: "idx_room_members_room_id")
   @@map("room_members")
 }

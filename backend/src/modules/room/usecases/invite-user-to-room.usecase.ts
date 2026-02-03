@@ -6,7 +6,6 @@ import {
 import { InviteUserToRoomInput } from '../graphql-types/inputs/invite-user-to-room.input';
 import { UserPayload } from 'src/modules/auth/types/user-payload';
 import { Room } from '../graphql-types/objects/room.model';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class InviteUserToRoomUseCase {
@@ -24,23 +23,18 @@ export class InviteUserToRoomUseCase {
       throw new NotFoundException(`Room with id ${input.roomId} not found`);
     }
 
-    try {
-      await this.roomRepository.createInvitation(
-        input.roomId,
-        input.userId,
-        user.sub,
-      );
-    } catch (e) {
-      if (
-        !(
-          e instanceof Prisma.PrismaClientKnownRequestError &&
-          e.code === 'P2002'
-        )
-      ) {
-        throw e;
-      }
-    }
+    await this.roomRepository.createInvitation(
+      input.roomId,
+      input.userId,
+      user.sub,
+    );
 
-    return await this.roomRepository.findById(input.roomId);
+    const updatedRoom = await this.roomRepository.findById(input.roomId);
+    if (!updatedRoom) {
+      throw new NotFoundException(
+        `Room with id ${input.roomId} was deleted during operation`,
+      );
+    }
+    return updatedRoom;
   }
 }

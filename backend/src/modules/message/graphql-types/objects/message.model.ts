@@ -9,13 +9,13 @@ export class Message {
   id!: string;
 
   @Field(() => User, { nullable: false, description: '投稿ユーザー' })
-  sender?: User;
+  sender!: User;
 
   @Field(() => MessageType, {
     nullable: false,
     description: 'メッセージタイプ',
   })
-  messageType?: MessageType;
+  messageType!: MessageType;
 
   @Field(() => GraphQLJSON, {
     nullable: true,

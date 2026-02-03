@@ -14,7 +14,7 @@ export class MessageType {
   @Field(() => String, { nullable: true, description: '説明' })
   description!: string | null;
 
-  @Field(() => Int, { defaultValue: 0, nullable: false, description: '並び順' })
+  @Field(() => Int, { nullable: false, description: '並び順' })
   sortNo!: number;
 
   @Field(() => Date, { nullable: false, description: '作成日時' })

@@ -17,7 +17,7 @@ import { UserPayload } from '../auth/types/user-payload';
 import { JoinRoomInput } from './graphql-types/inputs/join-room.input';
 import { JoinRoomUseCase } from './usecases/join-room.usecase';
 import { InviteUserToRoomInput } from './graphql-types/inputs/invite-user-to-room.input';
-import { InviteUserToRoomUseCase } from './usecases/invite-user-to-room.usease';
+import { InviteUserToRoomUseCase } from './usecases/invite-user-to-room.usecase';
 
 @Resolver(() => Room)
 export class RoomResolver {

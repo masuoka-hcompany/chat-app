@@ -6,7 +6,7 @@ import { GetRoomUseCase } from './usecases/get-room.usecase';
 import { UserModule } from '../user/user.module';
 import { CreateRoomUseCase } from './usecases/create-room.usecase';
 import { JoinRoomUseCase } from './usecases/join-room.usecase';
-import { InviteUserToRoomUseCase } from './usecases/invite-user-to-room.usease';
+import { InviteUserToRoomUseCase } from './usecases/invite-user-to-room.usecase';
 
 @Module({
   imports: [UserModule],
