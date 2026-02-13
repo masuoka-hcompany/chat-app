@@ -7,6 +7,7 @@ import { UserModule } from '../user/user.module';
 import { CreateRoomUseCase } from './usecases/create-room.usecase';
 import { JoinRoomUseCase } from './usecases/join-room.usecase';
 import { InviteUserToRoomUseCase } from './usecases/invite-user-to-room.usecase';
+import { ListRoomUseCase } from './usecases/list-room.usecase';
 
 @Module({
   imports: [UserModule],
@@ -16,6 +17,7 @@ import { InviteUserToRoomUseCase } from './usecases/invite-user-to-room.usecase'
     CreateRoomUseCase,
     JoinRoomUseCase,
     InviteUserToRoomUseCase,
+    ListRoomUseCase,
     {
       provide: IRoomRepositoryToken,
       useClass: RoomPrismaRepository,
