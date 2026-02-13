@@ -90,12 +90,38 @@ type Room {
   updater: User!
 }
 
+type MessageType {
+  """メッセージタイプ ID"""
+  id: ID!
+
+  """メッセージタイプ名"""
+  name: String!
+
+  """説明"""
+  description: String
+
+  """並び順"""
+  sortNo: Int!
+
+  """作成日時"""
+  createdAt: DateTime!
+
+  """更新日時"""
+  updatedAt: DateTime!
+}
+
 type Message {
   """メッセージ ID"""
   id: ID!
 
   """投稿ユーザー"""
   sender: User!
+
+  """メッセージタイプ"""
+  messageType: MessageType!
+
+  """メタデータ（システムメッセージ用の追加情報）"""
+  metadata: JSON
 
   """メッセージ内容"""
   contents: String!
@@ -106,6 +132,11 @@ type Message {
   """更新日時"""
   updatedAt: DateTime!
 }
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
 
 type MessageEdge {
   """このエッジを一意に識別するカーソル"""
@@ -160,7 +191,31 @@ type Query {
 }
 
 type Mutation {
+  createRoom(input: CreateRoomInput!): Room!
+  joinRoom(input: JoinRoomInput!): Room!
+  inviteUserToRoom(input: InviteUserToRoomInput!): Room!
   createMessage(input: CreateMessageInput!): Message!
+}
+
+input CreateRoomInput {
+  """チャットルーム名"""
+  name: String!
+
+  """説明"""
+  description: String
+}
+
+input JoinRoomInput {
+  """参加するチャットルーム ID"""
+  roomId: ID!
+}
+
+input InviteUserToRoomInput {
+  """招待先のチャットルーム ID"""
+  roomId: ID!
+
+  """招待するユーザー ID"""
+  userId: ID!
 }
 
 input CreateMessageInput {
