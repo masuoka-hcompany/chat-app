@@ -10,6 +10,7 @@ import { InviteUserToRoomUseCase } from './usecases/invite-user-to-room.usecase'
 import { ListRoomUseCase } from './usecases/list-room.usecase';
 import { RoomMemberPrismaRepository } from './repositories/room-member.prisma.repository';
 import { IRoomMemberRepositoryToken } from './repositories/interfaces/interface.room-member.repository';
+import { ListRoomMembersByRoomUseCase } from './usecases/list-room-members-by-room.usecase';
 
 @Module({
   imports: [UserModule],
@@ -20,6 +21,7 @@ import { IRoomMemberRepositoryToken } from './repositories/interfaces/interface.
     JoinRoomUseCase,
     InviteUserToRoomUseCase,
     ListRoomUseCase,
+    ListRoomMembersByRoomUseCase,
     {
       provide: IRoomRepositoryToken,
       useClass: RoomPrismaRepository,

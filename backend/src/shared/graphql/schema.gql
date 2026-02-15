@@ -90,6 +90,64 @@ type Room {
   updater: User!
 }
 
+type PageInfo {
+  """次のページが存在するか"""
+  hasNextPage: Boolean!
+
+  """前のページが存在するか"""
+  hasPreviousPage: Boolean!
+
+  """現在のページで最初の要素のカーソル"""
+  startCursor: String
+
+  """現在のページで最後の要素のカーソル"""
+  endCursor: String
+}
+
+type RoomEdge {
+  """このエッジを一意に識別するカーソル"""
+  cursor: String!
+
+  """チャットルーム"""
+  node: Room!
+}
+
+type RoomConnection {
+  """ページ情報"""
+  pageInfo: PageInfo!
+
+  """チャットルームのエッジのリスト"""
+  edges: [RoomEdge!]!
+
+  """全体のアイテム数"""
+  totalCount: Int!
+}
+
+type RoomMemberEdge {
+  """このエッジを一意に識別するカーソル"""
+  cursor: String!
+
+  """参加者"""
+  node: User!
+
+  """参加日時"""
+  joinedAt: DateTime!
+
+  """招待者（自主参加の場合はnull）"""
+  invitedBy: User
+}
+
+type RoomMemberConnection {
+  """ページ情報"""
+  pageInfo: PageInfo!
+
+  """チャットルーム参加者のエッジのリスト"""
+  edges: [RoomMemberEdge!]!
+
+  """全体のアイテム数"""
+  totalCount: Int!
+}
+
 type MessageType {
   """メッセージタイプ ID"""
   id: ID!
@@ -146,20 +204,6 @@ type MessageEdge {
   node: Message!
 }
 
-type PageInfo {
-  """次のページが存在するか"""
-  hasNextPage: Boolean!
-
-  """前のページが存在するか"""
-  hasPreviousPage: Boolean!
-
-  """現在のページで最初の要素のカーソル"""
-  startCursor: String
-
-  """現在のページで最後の要素のカーソル"""
-  endCursor: String
-}
-
 type MessageConnection {
   """メッセージのエッジのリスト"""
   edges: [MessageEdge!]!
@@ -173,6 +217,35 @@ type MessageConnection {
 
 type Query {
   room(id: ID!): Room
+  roomsConnection(
+    """取得する最初の件数"""
+    first: Int
+
+    """取得する最後の件数"""
+    last: Int
+
+    """ページネーション用のカーソル（次ページ）"""
+    after: String
+
+    """ページネーション用のカーソル（前ページ）"""
+    before: String
+    filter: RoomFilterInput
+  ): RoomConnection!
+  membersConnectionByRoom(
+    roomId: ID!
+
+    """取得する最初の件数"""
+    first: Int
+
+    """取得する最後の件数"""
+    last: Int
+
+    """ページネーション用のカーソル（次ページ）"""
+    after: String
+
+    """ページネーション用のカーソル（前ページ）"""
+    before: String
+  ): RoomMemberConnection!
   messagesConnectionByRoom(
     roomId: ID!
 
@@ -188,6 +261,11 @@ type Query {
     """ページネーション用のカーソル（前ページ）"""
     before: String
   ): MessageConnection!
+}
+
+input RoomFilterInput {
+  """ルーム参加状況による絞り込み"""
+  joinedByMe: Boolean!
 }
 
 type Mutation {

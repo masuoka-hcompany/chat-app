@@ -4,8 +4,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
-import { IRoomMemberRepository } from './interfaces/interface.room-member.repository';
+import {
+  FetchRoomMembersConnectionParams,
+  IRoomMemberRepository,
+} from './interfaces/interface.room-member.repository';
 import { Prisma } from '@prisma/client';
+import { RoomMemberConnection } from '../graphql-types/objects/room-member-connection.model';
 
 @Injectable()
 export class RoomMemberPrismaRepository implements IRoomMemberRepository {
@@ -64,5 +68,63 @@ export class RoomMemberPrismaRepository implements IRoomMemberRepository {
         }
       }
     }
+  }
+
+  async fetchRoomMembersConnection(
+    params: FetchRoomMembersConnectionParams,
+  ): Promise<RoomMemberConnection> {
+    const { roomId, first, after, last, before } = params;
+
+    const totalCount = await this.prisma.roomMember.count({
+      where: { roomId },
+    });
+
+    const take = first ?? last ?? 20;
+    const cursor = after ?? before;
+    const cursorObj = cursor ? { id: cursor } : undefined;
+    const isForward = !!first;
+
+    const orderBy = { joinedAt: 'asc' as const };
+
+    const roomMembers = await this.prisma.roomMember.findMany({
+      where: { roomId },
+      take: isForward ? take + 1 : -(take + 1),
+      skip: cursor ? 1 : 0,
+      cursor: cursorObj,
+      orderBy,
+      include: {
+        user: {
+          include: {
+            profile: true,
+          },
+        },
+        inviter: {
+          include: {
+            profile: true,
+          },
+        },
+      },
+    });
+
+    const hasExtra = roomMembers.length > take;
+    const sliced = hasExtra ? roomMembers.slice(0, take) : roomMembers;
+
+    const edges = sliced.map((member) => ({
+      node: member.user,
+      cursor: member.id,
+      joinedAt: member.joinedAt,
+      invitedBy: member.inviter,
+    }));
+
+    return {
+      edges,
+      pageInfo: {
+        hasNextPage: isForward ? hasExtra : false,
+        hasPreviousPage: !isForward ? hasExtra : false,
+        startCursor: sliced[0]?.id ?? null,
+        endCursor: sliced[sliced.length - 1]?.id ?? null,
+      },
+      totalCount,
+    };
   }
 }

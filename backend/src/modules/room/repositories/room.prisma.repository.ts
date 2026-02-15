@@ -29,12 +29,20 @@ export class RoomPrismaRepository implements IRoomRepository {
     const { first, after, last, before, filter, currentUserId } = params;
 
     const where: any = {};
-    if (filter?.joinedByMe && currentUserId) {
-      where.roomMembers = {
-        some: {
-          userId: currentUserId,
-        },
-      };
+    if (filter?.joinedByMe !== undefined && currentUserId) {
+      if (filter.joinedByMe === true) {
+        where.roomMembers = {
+          some: {
+            userId: currentUserId,
+          },
+        };
+      } else {
+        where.roomMembers = {
+          none: {
+            userId: currentUserId,
+          },
+        };
+      }
     }
 
     const totalCount = await this.prisma.room.count({ where });
