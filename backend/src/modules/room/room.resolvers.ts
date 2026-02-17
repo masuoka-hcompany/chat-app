@@ -1,5 +1,6 @@
 import {
   Args,
+  ID,
   Mutation,
   Parent,
   Query,
@@ -18,6 +19,14 @@ import { JoinRoomInput } from './graphql-types/inputs/join-room.input';
 import { JoinRoomUseCase } from './usecases/join-room.usecase';
 import { InviteUserToRoomInput } from './graphql-types/inputs/invite-user-to-room.input';
 import { InviteUserToRoomUseCase } from './usecases/invite-user-to-room.usecase';
+import { RoomConnection } from './graphql-types/objects/room-connection.model';
+import { PaginationArgs } from 'src/shared/graphql/graphql-types/args/pagination.args';
+import { ListRoomUseCase } from './usecases/list-room.usecase';
+import { RoomFilterInput } from './graphql-types/inputs/room-filter.input';
+import { RoomMemberConnection } from './graphql-types/objects/room-member-connection.model';
+import { ListRoomMembersByRoomUseCase } from './usecases/list-room-members-by-room.usecase';
+import { isUUID } from 'class-validator';
+import { BadRequestException } from '@nestjs/common';
 
 @Resolver(() => Room)
 export class RoomResolver {
@@ -27,11 +36,50 @@ export class RoomResolver {
     private readonly createRoomUseCase: CreateRoomUseCase,
     private readonly joinRoomUseCase: JoinRoomUseCase,
     private readonly inviteUserToRoomUseCase: InviteUserToRoomUseCase,
+    private readonly listRoomUseCase: ListRoomUseCase,
+    private readonly listRoomMembersByRoomUseCase: ListRoomMembersByRoomUseCase,
   ) {}
 
   @Query(() => Room, { nullable: true })
   async room(@Args() args: RoomArgs) {
     return this.getRoomUseCase.execute(args.id);
+  }
+
+  @Query(() => RoomConnection)
+  async roomsConnection(
+    @Args() paginationArgs: PaginationArgs,
+    @CurrentUser() user: UserPayload,
+    @Args('filter', { type: () => RoomFilterInput, nullable: true })
+    filter?: RoomFilterInput,
+  ): Promise<RoomConnection> {
+    const { first, after, last, before } = paginationArgs;
+    return this.listRoomUseCase.execute(
+      first,
+      after,
+      last,
+      before,
+      filter,
+      user?.sub,
+    );
+  }
+
+  @Query(() => RoomMemberConnection)
+  async membersConnectionByRoom(
+    @Args('roomId', { type: () => ID }) roomId: string,
+    @Args() paginationArgs: PaginationArgs,
+  ): Promise<RoomMemberConnection> {
+    if (!isUUID(roomId)) {
+      throw new BadRequestException('roomId must be a valid UUID');
+    }
+
+    const { first, after, last, before } = paginationArgs;
+    return this.listRoomMembersByRoomUseCase.execute(
+      roomId,
+      first,
+      after,
+      last,
+      before,
+    );
   }
 
   @ResolveField()

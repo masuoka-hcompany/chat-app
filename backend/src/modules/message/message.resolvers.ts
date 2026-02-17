@@ -12,8 +12,9 @@ import { PaginationArgs } from 'src/shared/graphql/graphql-types/args/pagination
 import { Message } from './graphql-types/objects/message.model';
 import { CreateMessageInput } from './graphql-types/inputs/create-message.input';
 import { CreateMessageUseCase } from './usecases/create-message.usecase';
-import { Inject } from '@nestjs/common';
+import { BadRequestException, Inject } from '@nestjs/common';
 import { PubSub } from 'graphql-subscriptions';
+import { isUUID } from 'class-validator';
 
 @Resolver()
 export class MessageResolver {
@@ -28,6 +29,10 @@ export class MessageResolver {
     @Args('roomId', { type: () => ID }) roomId: string,
     @Args() paginationArgs: PaginationArgs,
   ): Promise<MessageConnection> {
+    if (!isUUID(roomId)) {
+      throw new BadRequestException('roomId must be a valid UUID');
+    }
+
     const { first, after, last, before } = paginationArgs;
     return this.listMessagesByRoomUseCase.execute(
       roomId,
