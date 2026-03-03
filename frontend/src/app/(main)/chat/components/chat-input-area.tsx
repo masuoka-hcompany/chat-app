@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { ChatInputForm } from "./chat-input-form";
 import { sendMessageAction } from "../actions/send-message-action";
 
-export function ChatInputArea() {
+export function ChatInputArea({ roomId }: { roomId: string }) {
   const [value, setValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -20,7 +20,7 @@ export function ChatInputArea() {
   const handleSubmit = async () => {
     setIsLoading(true);
 
-    const result = await sendMessageAction(value);
+    const result = await sendMessageAction(value, roomId);
     if (result.ok) {
       toast(result.message ?? "送信しました"); // TODO: toast周りの挙動は未調整
     } else {

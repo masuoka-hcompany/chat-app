@@ -19,7 +19,7 @@ export default async function ChatRoomPage({
     <>
       <ChatRoomHeaderContainer roomId={roomId} />
       <ChatMessageListContainer roomId={roomId} />
-      <ChatInputArea />
+      <ChatInputArea roomId={roomId} />
     </>
   );
 }
