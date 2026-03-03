@@ -1,12 +1,9 @@
 import { getGraphqlClient } from "@/lib/graphql-request/client";
 import { RoomsConnectionDocument } from "@/gql/graphql";
-import { SidebarRoomList, SidebarRoomListProps } from "./sidebar-room-list";
+import { AvailableRoomListContainer } from "./available-room-list-container";
+import { JoinedRoomList, JoinedRoomListProps } from "./joined-room-list";
 
-export async function SidebarRoomListContainer({
-  roomId,
-}: {
-  roomId?: string;
-}) {
+export async function JoinedRoomListContainer({ roomId }: { roomId?: string }) {
   const client = await getGraphqlClient();
   const roomsConnectionDocument = await client.request(
     RoomsConnectionDocument,
@@ -17,12 +14,17 @@ export async function SidebarRoomListContainer({
     },
   );
 
-  const rooms: SidebarRoomListProps["rooms"] =
+  const rooms: JoinedRoomListProps["rooms"] =
     roomsConnectionDocument.roomsConnection.edges.map((edge) => ({
       id: edge.node.id,
       name: edge.node.name,
       isActive: edge.node.id === roomId,
     }));
 
-  return <SidebarRoomList rooms={rooms} />;
+  return (
+    <>
+      <JoinedRoomList rooms={rooms} />
+      <AvailableRoomListContainer />
+    </>
+  );
 }

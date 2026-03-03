@@ -12,7 +12,7 @@ import {
   SidebarFooter,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { SidebarRoomListContainer } from "@/app/(main)/chat/components/sidebar-room-list-container";
+import { JoinedRoomListContainer } from "@/app/(main)/chat/components/joined-room-list-container";
 
 export function AppSidebar({
   roomId,
@@ -28,7 +28,7 @@ export function AppSidebar({
       </SidebarHeader>
 
       <SidebarContent className="gap-0">
-        <SidebarRoomListContainer roomId={roomId} />
+        <JoinedRoomListContainer roomId={roomId} />
       </SidebarContent>
 
       <SidebarFooter>

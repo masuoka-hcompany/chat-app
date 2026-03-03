@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { ChevronRight } from "lucide-react";
 
-export type SidebarRoomListProps = {
+export type JoinedRoomListProps = {
   rooms: {
     id: string;
     name: string;
@@ -21,16 +21,16 @@ export type SidebarRoomListProps = {
   }[];
 };
 
-export function SidebarRoomList({ rooms }: SidebarRoomListProps) {
+export function JoinedRoomList({ rooms }: JoinedRoomListProps) {
   return (
-    <Collapsible title="チャンネル" defaultOpen className="group/collapsible">
+    <Collapsible title="ルーム" defaultOpen className="group/collapsible">
       <SidebarGroup>
         <SidebarGroupLabel
           asChild
           className="group/label text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm"
         >
           <CollapsibleTrigger>
-            チャンネル
+            ルーム
             <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
           </CollapsibleTrigger>
         </SidebarGroupLabel>
