@@ -1,44 +1,23 @@
 import * as React from "react";
-import { ChevronRight, Box, LogOut } from "lucide-react"; // LogOutを追加
-import { signOut } from "@/auth"; // signOutをインポート
+import { Box, LogOut } from "lucide-react";
+import { signOut } from "@/auth";
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarFooter, // Footerを追加
+  SidebarFooter,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { SidebarRoomListContainer } from "@/app/(main)/chat/components/sidebar-room-list-container";
 
-// This is sample data.
-const data = {
-  navMain: [
-    {
-      title: "チャンネル",
-      url: "#",
-      items: [
-        {
-          title: "雑談",
-          url: "#",
-          isActive: true,
-        },
-      ],
-    },
-  ],
-};
-
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+  roomId,
+  ...props
+}: { roomId?: string } & React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -49,40 +28,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
 
       <SidebarContent className="gap-0">
-        {/* We create a collapsible SidebarGroup for each parent. */}
-        {data.navMain.map((item) => (
-          <Collapsible
-            key={item.title}
-            title={item.title}
-            defaultOpen
-            className="group/collapsible"
-          >
-            <SidebarGroup>
-              <SidebarGroupLabel
-                asChild
-                className="group/label text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm"
-              >
-                <CollapsibleTrigger>
-                  {item.title}{" "}
-                  <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
-                </CollapsibleTrigger>
-              </SidebarGroupLabel>
-              <CollapsibleContent>
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    {item.items.map((subItem) => (
-                      <SidebarMenuItem key={subItem.title}>
-                        <SidebarMenuButton asChild isActive={subItem.isActive}>
-                          <a href={subItem.url}># {subItem.title}</a>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    ))}
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </CollapsibleContent>
-            </SidebarGroup>
-          </Collapsible>
-        ))}
+        <SidebarRoomListContainer roomId={roomId} />
       </SidebarContent>
 
       <SidebarFooter>
