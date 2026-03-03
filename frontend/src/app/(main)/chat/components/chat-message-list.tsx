@@ -11,9 +11,14 @@ import { useLoggedInUserId } from "../hooks/use-logged-in-user-id";
 type ChatMessageListProps = {
   messages: ChatMessageItemProps[];
   pageInfo: PageInfo;
+  roomId: string;
 };
 
-export function ChatMessageList({ messages, pageInfo }: ChatMessageListProps) {
+export function ChatMessageList({
+  messages,
+  pageInfo,
+  roomId,
+}: ChatMessageListProps) {
   const [allMessages, setAllMessages] = useRealtimeMessages(messages);
   const [hasMore, setHasMore] = useState(pageInfo.hasPreviousPage);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -26,7 +31,7 @@ export function ChatMessageList({ messages, pageInfo }: ChatMessageListProps) {
     const beforeCursor = allMessages.length > 0 ? allMessages[0].id : undefined;
     const result = await client
       .query(MessagesByRoomDocument, {
-        roomId: "6508a8a7-2b77-49ee-947e-f01260a1e295", // TODO: 仮実装なので、取り急ぎ決め打ちのIDを指定。後々動的に取得する。
+        roomId,
         last: 5,
         before: beforeCursor,
       })
@@ -37,7 +42,7 @@ export function ChatMessageList({ messages, pageInfo }: ChatMessageListProps) {
     if (result.data?.messagesConnectionByRoom?.edges) {
       const newMessages = mapGraphQLMessagesToChatMessages(
         result.data,
-        loggedInUserId
+        loggedInUserId,
       );
       setAllMessages((prev) => [...newMessages, ...prev]);
 
