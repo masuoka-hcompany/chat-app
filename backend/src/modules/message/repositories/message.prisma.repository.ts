@@ -16,7 +16,7 @@ export class MessagePrismaRepository implements IMessageRepository {
         profile: true,
       },
     },
-    messageType: true, // これを追加
+    messageType: true,
   });
 
   constructor(private readonly prisma: PrismaService) {}

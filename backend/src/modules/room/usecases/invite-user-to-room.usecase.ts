@@ -6,12 +6,18 @@ import {
 import { InviteUserToRoomInput } from '../graphql-types/inputs/invite-user-to-room.input';
 import { UserPayload } from 'src/modules/auth/types/user-payload';
 import { Room } from '../graphql-types/objects/room.model';
+import {
+  IRoomMemberRepository,
+  IRoomMemberRepositoryToken,
+} from '../repositories/interfaces/interface.room-member.repository';
 
 @Injectable()
 export class InviteUserToRoomUseCase {
   constructor(
     @Inject(IRoomRepositoryToken)
     private readonly roomRepository: IRoomRepository,
+    @Inject(IRoomMemberRepositoryToken)
+    private readonly roomMemberRepository: IRoomMemberRepository,
   ) {}
 
   async execute(
@@ -23,7 +29,7 @@ export class InviteUserToRoomUseCase {
       throw new NotFoundException(`Room with id ${input.roomId} not found`);
     }
 
-    await this.roomRepository.createInvitation(
+    await this.roomMemberRepository.createInvitation(
       input.roomId,
       input.userId,
       user.sub,
