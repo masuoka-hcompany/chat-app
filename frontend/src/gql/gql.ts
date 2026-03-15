@@ -18,12 +18,16 @@ type Documents = {
     "subscription MessageAdded {\n  messageAdded {\n    ...MessageItemFragment\n  }\n}": typeof types.MessageAddedDocument,
     "fragment MessageItemFragment on Message {\n  id\n  contents\n  sender {\n    id\n    profile {\n      name\n      profileImageUrl\n    }\n  }\n}": typeof types.MessageItemFragmentFragmentDoc,
     "query MessagesByRoom($roomId: ID!, $first: Int, $last: Int, $after: String, $before: String) {\n  messagesConnectionByRoom(\n    roomId: $roomId\n    first: $first\n    last: $last\n    after: $after\n    before: $before\n  ) {\n    totalCount\n    edges {\n      cursor\n      node {\n        ...MessageItemFragment\n        createdAt\n      }\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n    }\n  }\n}": typeof types.MessagesByRoomDocument,
+    "query Room($roomId: ID!) {\n  room(id: $roomId) {\n    name\n  }\n}": typeof types.RoomDocument,
+    "query RoomsConnection($first: Int, $after: String, $filter: RoomFilterInput) {\n  roomsConnection(first: $first, after: $after, filter: $filter) {\n    edges {\n      cursor\n      node {\n        id\n        name\n        description\n        createdAt\n        updatedAt\n      }\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n    }\n  }\n}": typeof types.RoomsConnectionDocument,
 };
 const documents: Documents = {
     "mutation CreateMessage($input: CreateMessageInput!) {\n  createMessage(input: $input) {\n    id\n    sender {\n      profile {\n        name\n      }\n    }\n    contents\n    createdAt\n    updatedAt\n  }\n}": types.CreateMessageDocument,
     "subscription MessageAdded {\n  messageAdded {\n    ...MessageItemFragment\n  }\n}": types.MessageAddedDocument,
     "fragment MessageItemFragment on Message {\n  id\n  contents\n  sender {\n    id\n    profile {\n      name\n      profileImageUrl\n    }\n  }\n}": types.MessageItemFragmentFragmentDoc,
     "query MessagesByRoom($roomId: ID!, $first: Int, $last: Int, $after: String, $before: String) {\n  messagesConnectionByRoom(\n    roomId: $roomId\n    first: $first\n    last: $last\n    after: $after\n    before: $before\n  ) {\n    totalCount\n    edges {\n      cursor\n      node {\n        ...MessageItemFragment\n        createdAt\n      }\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n    }\n  }\n}": types.MessagesByRoomDocument,
+    "query Room($roomId: ID!) {\n  room(id: $roomId) {\n    name\n  }\n}": types.RoomDocument,
+    "query RoomsConnection($first: Int, $after: String, $filter: RoomFilterInput) {\n  roomsConnection(first: $first, after: $after, filter: $filter) {\n    edges {\n      cursor\n      node {\n        id\n        name\n        description\n        createdAt\n        updatedAt\n      }\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n    }\n  }\n}": types.RoomsConnectionDocument,
 };
 
 /**
@@ -56,6 +60,14 @@ export function graphql(source: "fragment MessageItemFragment on Message {\n  id
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "query MessagesByRoom($roomId: ID!, $first: Int, $last: Int, $after: String, $before: String) {\n  messagesConnectionByRoom(\n    roomId: $roomId\n    first: $first\n    last: $last\n    after: $after\n    before: $before\n  ) {\n    totalCount\n    edges {\n      cursor\n      node {\n        ...MessageItemFragment\n        createdAt\n      }\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n    }\n  }\n}"): (typeof documents)["query MessagesByRoom($roomId: ID!, $first: Int, $last: Int, $after: String, $before: String) {\n  messagesConnectionByRoom(\n    roomId: $roomId\n    first: $first\n    last: $last\n    after: $after\n    before: $before\n  ) {\n    totalCount\n    edges {\n      cursor\n      node {\n        ...MessageItemFragment\n        createdAt\n      }\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n    }\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "query Room($roomId: ID!) {\n  room(id: $roomId) {\n    name\n  }\n}"): (typeof documents)["query Room($roomId: ID!) {\n  room(id: $roomId) {\n    name\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "query RoomsConnection($first: Int, $after: String, $filter: RoomFilterInput) {\n  roomsConnection(first: $first, after: $after, filter: $filter) {\n    edges {\n      cursor\n      node {\n        id\n        name\n        description\n        createdAt\n        updatedAt\n      }\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n    }\n  }\n}"): (typeof documents)["query RoomsConnection($first: Int, $after: String, $filter: RoomFilterInput) {\n  roomsConnection(first: $first, after: $after, filter: $filter) {\n    edges {\n      cursor\n      node {\n        id\n        name\n        description\n        createdAt\n        updatedAt\n      }\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n    }\n  }\n}"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

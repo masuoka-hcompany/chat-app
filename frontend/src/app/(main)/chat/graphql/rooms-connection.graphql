@@ -1,0 +1,20 @@
+query RoomsConnection($first: Int, $after: String, $filter: RoomFilterInput) {
+  roomsConnection(first: $first, after: $after, filter: $filter) {
+    edges {
+      cursor
+      node {
+        id
+        name
+        description
+        createdAt
+        updatedAt
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+  }
+}

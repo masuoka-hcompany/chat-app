@@ -4,10 +4,10 @@ import { MessagesByRoomDocument } from "@/gql/graphql";
 import { mapGraphQLMessagesToChatMessages } from "../lib/message-mapper";
 import { getLoggedInUserId } from "../lib/get-logged-in-user-id";
 
-export async function ChatMessageListContainer() {
+export async function ChatMessageListContainer({ roomId }: { roomId: string }) {
   const client = await getGraphqlClient();
   const messagesByRoomDocument = await client.request(MessagesByRoomDocument, {
-    roomId: "6508a8a7-2b77-49ee-947e-f01260a1e295", // TODO: 仮実装なので、取り急ぎ決め打ちのIDを指定。後々動的に取得する。
+    roomId,
     last: 10,
   });
 
@@ -15,10 +15,12 @@ export async function ChatMessageListContainer() {
 
   const messages = mapGraphQLMessagesToChatMessages(
     messagesByRoomDocument,
-    loggedInUserId
+    loggedInUserId,
   );
 
   const pageInfo = messagesByRoomDocument.messagesConnectionByRoom?.pageInfo;
 
-  return <ChatMessageList messages={messages} pageInfo={pageInfo} />;
+  return (
+    <ChatMessageList messages={messages} pageInfo={pageInfo} roomId={roomId} />
+  );
 }
