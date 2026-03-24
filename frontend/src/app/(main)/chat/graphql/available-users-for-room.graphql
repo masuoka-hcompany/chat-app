@@ -1,0 +1,17 @@
+query AvailableUsersForRoom($roomId: ID!, $first: Int, $after: String) {
+  availableUsersForRoom(roomId: $roomId, first: $first, after: $after) {
+    edges {
+      cursor
+      node {
+        ...UserProfileFragment
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}

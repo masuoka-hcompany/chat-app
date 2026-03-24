@@ -11,6 +11,8 @@ import { ListRoomUseCase } from './usecases/list-room.usecase';
 import { RoomMemberPrismaRepository } from './repositories/room-member.prisma.repository';
 import { IRoomMemberRepositoryToken } from './repositories/interfaces/interface.room-member.repository';
 import { ListRoomMembersByRoomUseCase } from './usecases/list-room-members-by-room.usecase';
+import { CheckUserJoinedRoomUseCase } from './usecases/check-user-joined-room.usecase';
+import { GetAvailableUsersForRoomUseCase } from './usecases/get-available-users-for-room.usecase';
 
 @Module({
   imports: [UserModule],
@@ -22,6 +24,8 @@ import { ListRoomMembersByRoomUseCase } from './usecases/list-room-members-by-ro
     InviteUserToRoomUseCase,
     ListRoomUseCase,
     ListRoomMembersByRoomUseCase,
+    CheckUserJoinedRoomUseCase,
+    GetAvailableUsersForRoomUseCase,
     {
       provide: IRoomRepositoryToken,
       useClass: RoomPrismaRepository,

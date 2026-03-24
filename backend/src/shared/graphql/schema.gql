@@ -148,6 +148,17 @@ type RoomMemberConnection {
   totalCount: Int!
 }
 
+type UserEdge {
+  cursor: String!
+  node: User!
+}
+
+type UserConnection {
+  pageInfo: PageInfo!
+  edges: [UserEdge!]!
+  totalCount: Int!
+}
+
 type MessageType {
   """メッセージタイプ ID"""
   id: ID!
@@ -246,6 +257,22 @@ type Query {
     """ページネーション用のカーソル（前ページ）"""
     before: String
   ): RoomMemberConnection!
+  availableUsersForRoom(
+    roomId: ID!
+
+    """取得する最初の件数"""
+    first: Int
+
+    """取得する最後の件数"""
+    last: Int
+
+    """ページネーション用のカーソル（次ページ）"""
+    after: String
+
+    """ページネーション用のカーソル（前ページ）"""
+    before: String
+  ): UserConnection!
+  isJoinedRoom(roomId: ID!): Boolean!
   messagesConnectionByRoom(
     roomId: ID!
 

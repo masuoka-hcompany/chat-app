@@ -4,6 +4,7 @@ import "./globals.css";
 import { UrqlClientProvider } from "@/components/provider/urql-client-provider";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default async function RootLayout({
         <SessionProvider session={session}>
           <UrqlClientProvider>{children}</UrqlClientProvider>
         </SessionProvider>
+        <Toaster />
       </body>
     </html>
   );

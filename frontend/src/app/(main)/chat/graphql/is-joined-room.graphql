@@ -1,0 +1,3 @@
+query IsJoinedRoom($roomId: ID!) {
+  isJoinedRoom(roomId: $roomId)
+}

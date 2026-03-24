@@ -1,0 +1,9 @@
+mutation InviteUserToRoom($input: InviteUserToRoomInput!) {
+  inviteUserToRoom(input: $input) {
+    id
+    name
+    description
+    createdAt
+    updatedAt
+  }
+}

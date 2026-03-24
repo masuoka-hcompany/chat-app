@@ -1,6 +1,9 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
+import { useRouter } from "next/navigation";
 
 export type AvailableRoomListProps = {
   rooms: Array<{
@@ -10,6 +13,8 @@ export type AvailableRoomListProps = {
 };
 
 export function AvailableRoomList({ rooms }: AvailableRoomListProps) {
+  const router = useRouter();
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -32,6 +37,7 @@ export function AvailableRoomList({ rooms }: AvailableRoomListProps) {
                 <li
                   key={room.id}
                   className="p-2 rounded hover:bg-gray-100 cursor-pointer"
+                  onClick={() => router.push(`/chat/${room.id}`)}
                 >
                   # {room.name}
                 </li>
