@@ -2,13 +2,15 @@
 
 ## Query 一覧
 
-| Query 名                 | 説明                           |
-| ------------------------ | ------------------------------ |
-| room                     | チャットルームを単体取得       |
-| roomsConnection          | チャットルーム一覧用取得       |
-| messagesConnectionByRoom | チャットルームのメッセージ取得 |
-| membersConnectionByRoom  | チャットルームの参加者取得     |
-| messageTypes             | メッセージタイプ一覧取得       |
+| Query 名                 | 説明                                         |
+| ------------------------ | -------------------------------------------- |
+| room                     | チャットルームを単体取得                     |
+| roomsConnection          | チャットルーム一覧用取得                     |
+| isJoinedRoom             | チャットルーム参加有無                       |
+| messagesConnectionByRoom | チャットルームのメッセージ取得               |
+| membersConnectionByRoom  | チャットルームの参加者取得                   |
+| messageTypes             | メッセージタイプ一覧取得                     |
+| availableUsersForRoom    | ルームに未参加のユーザー一覧取得（招待候補） |
 
 ```graphql
 type Query {
@@ -20,6 +22,7 @@ type Query {
     before: String
     filter: RoomFilterInput
   ): RoomConnection!
+  isJoinedRoom(roomId: ID!): Boolean!
   messagesConnectionByRoom(
     roomId: ID!
     first: Int
@@ -35,6 +38,13 @@ type Query {
     before: String
   ): RoomMemberConnection!
   messageTypes: [MessageType!]!
+  availableUsersForRoom(
+    roomId: ID!
+    first: Int
+    after: String
+    last: Int
+    before: String
+  ): UserConnection!
 }
 ```
 
@@ -46,8 +56,6 @@ after: 指定されたカーソルの「後」の要素から取得します。�
 last: 逆順で取得したい件数を指定します。before 引数と組み合わせて使用します。
 before: 指定されたカーソルの「前」の要素から取得します。
 ```
-
----
 
 ## Mutation 一覧
 
@@ -85,26 +93,28 @@ type Subscription {
 
 ## 型定義
 
-| 種類  | 名称                  | 内容                             |
-| ----- | --------------------- | -------------------------------- |
-| type  | User                  | ユーザー                         |
-| type  | UserStatus            | ユーザーステータス               |
-| type  | Profile               | ユーザープロフィール             |
-| type  | Room                  | チャットルーム                   |
-| type  | RoomConnection        | チャットルームコネクション       |
-| type  | RoomEdge              | チャットルームエッジ             |
-| type  | RoomMemberConnection  | チャットルーム参加者コネクション |
-| type  | RoomMemberEdge        | チャットルーム参加者エッジ       |
-| type  | Message               | メッセージ                       |
-| type  | MessageType           | メッセージタイプ                 |
-| type  | MessageConnection     | メッセージコネクション           |
-| type  | MessageEdge           | メッセージエッジ                 |
-| type  | PageInfo              | ページ情報                       |
-| input | CreateMessageInput    | メッセージ作成用入力             |
-| input | CreateRoomInput       | ルーム作成用入力                 |
-| input | JoinRoomInput         | ルーム参加用入力                 |
-| input | InviteUserToRoomInput | ルーム招待用入力                 |
-| input | RoomFilterInput       | ルーム絞り込み条件入力           |
+| 種類  | 名称                  | 内容                                         |
+| ----- | --------------------- | -------------------------------------------- |
+| type  | User                  | ユーザー                                     |
+| type  | UserStatus            | ユーザーステータス                           |
+| type  | Profile               | ユーザープロフィール                         |
+| type  | Room                  | チャットルーム                               |
+| type  | RoomConnection        | チャットルームコネクション                   |
+| type  | RoomEdge              | チャットルームエッジ                         |
+| type  | RoomMemberConnection  | チャットルーム参加者コネクション             |
+| type  | RoomMemberEdge        | チャットルーム参加者エッジ                   |
+| type  | Message               | メッセージ                                   |
+| type  | MessageType           | メッセージタイプ                             |
+| type  | MessageConnection     | メッセージコネクション                       |
+| type  | MessageEdge           | メッセージエッジ                             |
+| type  | PageInfo              | ページ情報                                   |
+| input | CreateMessageInput    | メッセージ作成用入力                         |
+| input | CreateRoomInput       | ルーム作成用入力                             |
+| input | JoinRoomInput         | ルーム参加用入力                             |
+| input | InviteUserToRoomInput | ルーム招待用入力                             |
+| input | RoomFilterInput       | ルーム絞り込み条件入力                       |
+| type  | UserConnection        | ユーザーコネクション（ページネーション対応） |
+| type  | UserEdge              | ユーザーエッジ                               |
 
 ```graphql
 type User {
@@ -260,6 +270,21 @@ input RoomFilterInput {
 }
 ```
 
+```graphql
+type UserConnection {
+  pageInfo: PageInfo!
+  edges: [UserEdge!]!
+  totalCount: Int!
+}
+```
+
+```graphql
+type UserEdge {
+  cursor: String!
+  node: User!
+}
+```
+
 ### 補足:Node Edge Connection など GraphQL に関連する用語の説明
 
 ```
@@ -268,8 +293,6 @@ Edge: Nodeと、そのNodeのリスト内での位置を示すカーソルを組
 Connection: Edgeのリストと、ページネーション情報 (PageInfo)、全体の件数 (totalCount) をまとめたもの。
 PageInfo: 次のページ有無やカーソル範囲など、ページ送りに関するメタ情報を提供する。
 ```
-
----
 
 ## 備考
 

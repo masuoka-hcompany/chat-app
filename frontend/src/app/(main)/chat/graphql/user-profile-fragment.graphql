@@ -1,0 +1,7 @@
+fragment UserProfileFragment on User {
+  id
+  profile {
+    name
+    profileImageUrl
+  }
+}

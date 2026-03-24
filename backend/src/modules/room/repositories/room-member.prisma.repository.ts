@@ -1,3 +1,6 @@
+import { UserConnection } from 'src/modules/user/graphql-types/objects/user-connection.model';
+import { UserEdge } from 'src/modules/user/graphql-types/objects/user-edge.model';
+import { userIncludeWithProfileAndStatus } from 'src/modules/user/repositories/user.prisma.include';
 import {
   ConflictException,
   Injectable,
@@ -114,6 +117,73 @@ export class RoomMemberPrismaRepository implements IRoomMemberRepository {
       cursor: member.id,
       joinedAt: member.joinedAt,
       invitedBy: member.inviter,
+    }));
+
+    return {
+      edges,
+      pageInfo: {
+        hasNextPage: isForward ? hasExtra : false,
+        hasPreviousPage: !isForward ? hasExtra : false,
+        startCursor: sliced[0]?.id ?? null,
+        endCursor: sliced[sliced.length - 1]?.id ?? null,
+      },
+      totalCount,
+    };
+  }
+
+  async existsByRoomIdAndUserId(
+    roomId: string,
+    userId: string,
+  ): Promise<boolean> {
+    const count = await this.prisma.roomMember.count({
+      where: { roomId, userId },
+    });
+    return count > 0;
+  }
+
+  async findAvailableUsersForRoom(
+    roomId: string,
+    first?: number,
+    after?: string,
+    last?: number,
+    before?: string,
+  ): Promise<UserConnection> {
+    // 既に参加しているユーザーID一覧を取得
+    const roomMembers = await this.prisma.roomMember.findMany({
+      where: { roomId },
+      select: { userId: true },
+    });
+    const joinedUserIds = roomMembers.map((m) => m.userId);
+
+    // ページネーション設定
+    const take = first ?? last ?? 20;
+    const cursor = after ?? before;
+    const cursorObj = cursor ? { id: cursor } : undefined;
+    const isForward = !!first;
+    const orderBy = { createdAt: 'asc' as const };
+
+    // 未参加ユーザーを取得
+    const where: any = {
+      id: { notIn: joinedUserIds },
+      userStatusId: 'ACTIVE',
+    };
+
+    const totalCount = await this.prisma.user.count({ where });
+
+    const users = await this.prisma.user.findMany({
+      where,
+      take: isForward ? take + 1 : -(take + 1),
+      skip: cursor ? 1 : 0,
+      cursor: cursorObj,
+      orderBy,
+      include: userIncludeWithProfileAndStatus,
+    });
+
+    const hasExtra = users.length > take;
+    const sliced = hasExtra ? users.slice(0, take) : users;
+    const edges: UserEdge[] = sliced.map((user) => ({
+      node: user,
+      cursor: user.id,
     }));
 
     return {

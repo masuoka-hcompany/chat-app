@@ -1,7 +1,7 @@
 import { isValidUUID } from "@/lib/validation";
-import { ChatInputArea } from "../components/chat-input-area";
 import { ChatMessageListContainer } from "../components/chat-message-list-container";
 import { ChatRoomHeaderContainer } from "../components/chat-room-header-container";
+import { ChatRoomInputOrJoinContainer } from "../components/chat-room-input-or-join-container";
 
 export default async function ChatRoomPage({
   params,
@@ -19,7 +19,7 @@ export default async function ChatRoomPage({
     <>
       <ChatRoomHeaderContainer roomId={roomId} />
       <ChatMessageListContainer roomId={roomId} />
-      <ChatInputArea roomId={roomId} />
+      <ChatRoomInputOrJoinContainer roomId={roomId} />
     </>
   );
 }

@@ -27,6 +27,9 @@ import { RoomMemberConnection } from './graphql-types/objects/room-member-connec
 import { ListRoomMembersByRoomUseCase } from './usecases/list-room-members-by-room.usecase';
 import { isUUID } from 'class-validator';
 import { BadRequestException } from '@nestjs/common';
+import { CheckUserJoinedRoomUseCase } from './usecases/check-user-joined-room.usecase';
+import { GetAvailableUsersForRoomUseCase } from './usecases/get-available-users-for-room.usecase';
+import { UserConnection } from '../user/graphql-types/objects/user-connection.model';
 
 @Resolver(() => Room)
 export class RoomResolver {
@@ -38,8 +41,9 @@ export class RoomResolver {
     private readonly inviteUserToRoomUseCase: InviteUserToRoomUseCase,
     private readonly listRoomUseCase: ListRoomUseCase,
     private readonly listRoomMembersByRoomUseCase: ListRoomMembersByRoomUseCase,
+    private readonly checkUserJoinedRoomUseCase: CheckUserJoinedRoomUseCase,
+    private readonly getAvailableUsersForRoomUseCase: GetAvailableUsersForRoomUseCase,
   ) {}
-
   @Query(() => Room, { nullable: true })
   async room(@Args() args: RoomArgs) {
     return this.getRoomUseCase.execute(args.id);
@@ -82,6 +86,21 @@ export class RoomResolver {
     );
   }
 
+  @Query(() => UserConnection)
+  async availableUsersForRoom(
+    @Args('roomId', { type: () => ID }) roomId: string,
+    @Args() paginationArgs: PaginationArgs,
+  ): Promise<UserConnection> {
+    const { first, after, last, before } = paginationArgs;
+    return this.getAvailableUsersForRoomUseCase.execute(
+      roomId,
+      first,
+      after,
+      last,
+      before,
+    );
+  }
+
   @ResolveField()
   async creator(@Parent() room: Room) {
     const { createUserId } = room;
@@ -116,5 +135,13 @@ export class RoomResolver {
     @CurrentUser() user: UserPayload,
   ) {
     return this.inviteUserToRoomUseCase.execute(input, user);
+  }
+
+  @Query(() => Boolean)
+  async isJoinedRoom(
+    @Args('roomId', { type: () => ID }) roomId: string,
+    @CurrentUser() user: UserPayload,
+  ): Promise<boolean> {
+    return this.checkUserJoinedRoomUseCase.execute(roomId, user);
   }
 }

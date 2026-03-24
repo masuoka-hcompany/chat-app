@@ -1,9 +1,8 @@
-import { AppHeader } from "@/components/layout/app-header";
 import { RoomDocument } from "@/gql/graphql";
 import { getGraphqlClient } from "@/lib/graphql-request/client";
-import { InviteMemberDialogContainer } from "./invite-member-dialog-container";
+import { RoomJoinPrompt } from "./room-join-prompt";
 
-export async function ChatRoomHeaderContainer({ roomId }: { roomId: string }) {
+export async function RoomJoinPromptContainer({ roomId }: { roomId: string }) {
   const client = await getGraphqlClient();
   const roomDocument = await client.request(RoomDocument, {
     roomId,
@@ -15,10 +14,5 @@ export async function ChatRoomHeaderContainer({ roomId }: { roomId: string }) {
   }
 
   const title = roomDocument?.room?.name ?? "不明なルーム";
-  return (
-    <AppHeader
-      pageTitle={title}
-      actions={<InviteMemberDialogContainer roomId={roomId} />}
-    />
-  );
+  return <RoomJoinPrompt roomName={title} roomId={roomId} />;
 }
